@@ -5,7 +5,7 @@ source "https://rubygems.org"
 gem "jekyll-theme-chirpy", "~> 6.0", ">= 6.0.1"
 
 # Pin sass-embedded to avoid deprecation warnings until theme is updated
-gem "sass-embedded", "~> 1.70.0"
+gem "sass-embedded", "~> 1.94.2"
 
 group :test do
   gem "html-proofer", "~> 3.18"
