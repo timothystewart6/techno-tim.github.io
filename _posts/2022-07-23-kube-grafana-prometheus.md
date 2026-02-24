@@ -167,7 +167,7 @@ Create a values file to hold our helm values
 nano values.yaml
 ```
 
-paste in values from [here](https://github.com/timothystewart6/tree/master/kubernetes/kube-prometheus-stack)
+paste in values from [here](https://github.com/timothystewart6/launchpad/tree/master/kubernetes/kube-prometheus-stack)
 
 Create our kube-prometheus-stack
 
@@ -195,7 +195,7 @@ helm upgrade -n monitoring prometheus prometheus-community/kube-prometheus-stack
 
 Examples:
 
-[Traefik Ingress example](https://github.com/timothystewart6/tree/master/kubernetes/kube-prometheus-stack)
+[Traefik Ingress example](https://github.com/timothystewart6/launchpad/tree/master/kubernetes/kube-prometheus-stack)
 
 ## Links
 
