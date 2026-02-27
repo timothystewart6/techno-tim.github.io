@@ -1,0 +1,727 @@
+<!doctype html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width, user-scalable=no initial-scale=1, shrink-to-fit=no, viewport-fit=cover" ><meta name="generator" content="Jekyll v4.4.1" /><meta property="og:title" content="Traefik 3 and FREE Wildcard Certificates with Docker" /><meta property="og:locale" content="en" /><meta name="description" content="In today’s Traefik tutorial we’ll get FREE Wildcard certificates to use in our HomeLab and with all of our internal self-hosted services. We’re going to set up Traefik 3 in Docker and get Let’s Encrypt certificates using Cloudflare as our DNS Provider (we’ll cover how to set up others too). Then we’ll configure local DNS using PiHole (or any other local DNS) to route to our services that are now protected with secure certificates!" /><meta property="og:description" content="In today’s Traefik tutorial we’ll get FREE Wildcard certificates to use in our HomeLab and with all of our internal self-hosted services. We’re going to set up Traefik 3 in Docker and get Let’s Encrypt certificates using Cloudflare as our DNS Provider (we’ll cover how to set up others too). Then we’ll configure local DNS using PiHole (or any other local DNS) to route to our services that are now protected with secure certificates!" /><link rel="canonical" href="https://technotim.com/posts/traefik-3-docker-certificates/" /><meta property="og:url" content="https://technotim.com/posts/traefik-3-docker-certificates/" /><meta property="og:site_name" content="Techno Tim" /><meta property="og:image" content="https://images.technotim.com/assets/img/headers/traefik-3-docker-certificates-hero.webp" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2024-04-30T08:00:00-05:00" /><meta name="twitter:card" content="summary_large_image" /><meta property="twitter:image" content="https://images.technotim.com/assets/img/headers/traefik-3-docker-certificates-hero.webp" /><meta property="twitter:title" content="Traefik 3 and FREE Wildcard Certificates with Docker" /><meta name="twitter:site" content="@technotimlive" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-01-07T14:03:20-06:00","datePublished":"2024-04-30T08:00:00-05:00","description":"In today’s Traefik tutorial we’ll get FREE Wildcard certificates to use in our HomeLab and with all of our internal self-hosted services. We’re going to set up Traefik 3 in Docker and get Let’s Encrypt certificates using Cloudflare as our DNS Provider (we’ll cover how to set up others too). Then we’ll configure local DNS using PiHole (or any other local DNS) to route to our services that are now protected with secure certificates!","headline":"Traefik 3 and FREE Wildcard Certificates with Docker","image":{"lqip":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAUACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP53x+2Cnxy1i40L4pfAv4Y+PvEnj2+T7d418Xaz8U7i+0+B9bfV9NttL0jw34/8K6Tpy6WbhdP+06ZDp+o6tpkS2Ot3uoW7NEf9AMty2hnEMDk2Ex+d5PgJYSniZ4HDYjJquBc8Fh3OSjGpw+sxj9Zu5VXPNKi9raaTpxhRj/NdbEYjDVcRi61HLcXVWIlhqFaphsfHEUadapFJtrNXg5ypNe5JYGm/Zvkbbcpy/Srwv/wSl+At74a8O3l3rni2S6u9C0m5uZEvJYUkuJ7C3lmdIkvNsSvI7Msa/KgIUcAV8piuNJYXE4jDUcroqlhq9WhSTx2OuqdGpKnBO1SKuoxS0SXZJaHswyelOMZ1K9WVScVKcuWkuacknKVuR2u23a7tsf/Z","url":"https://images.technotim.com/assets/img/headers/traefik-3-docker-certificates-hero.webp","@type":"imageObject"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://technotim.com/posts/traefik-3-docker-certificates/"},"url":"https://technotim.com/posts/traefik-3-docker-certificates/"}</script><title>Traefik 3 and FREE Wildcard Certificates with Docker | Techno Tim</title><link rel="icon" type="image/png" href="/assets/img/favicons/favicon-96x96.png" sizes="96x96"><link rel="icon" type="image/svg+xml" href="/assets/img/favicons/favicon.svg"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="/assets/css/jekyll-theme-chirpy.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4.36.4/dist/tocbot.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css"> <script src="/assets/js/dist/theme.min.js"></script> <script defer src="https://cdn.jsdelivr.net/combine/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js,npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.umd.min.js,npm/glightbox@3.3.0/dist/js/glightbox.min.js,npm/clipboard@2.0.11/dist/clipboard.min.js,npm/dayjs@1.11.18/dayjs.min.js,npm/dayjs@1.11.18/locale/en.js,npm/dayjs@1.11.18/plugin/relativeTime.js,npm/dayjs@1.11.18/plugin/localizedFormat.js,npm/tocbot@4.36.4/dist/tocbot.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=G-NZ5V7DM8F5"></script> <script> document.addEventListener('DOMContentLoaded', () => { window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-NZ5V7DM8F5'); }); </script><body><aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end"><header class="profile-wrapper"> <a href="/" id="avatar" class="rounded-circle"><img src="https://avatars.githubusercontent.com/u/1322205?s=400&u=5b4f2219006577dc0426007fe5a02391c4899677&v=4" width="112" height="112" alt="avatar" onerror="this.style.display='none'"></a> <a class="site-title d-block" href="/">Techno Tim</a><p class="site-subtitle fst-italic mb-0">Engineer. Builder. Creator. | From Code to Cloud</p></header><nav class="flex-column flex-grow-1 w-100 ps-0"><ul class="nav"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle"></i> <span>ABOUT</span> </a><li class="nav-item"> <a href="/shop/" class="nav-link"> <i class="fa-fw fas fa-bag-shopping"></i> <span>MERCH</span> </a><li class="nav-item"> <a href="/sponsor/" class="nav-link"> <i class="fa-fw fas fa-handshake"></i> <span>SPONSOR</span> </a></ul></nav><div class="sidebar-bottom d-flex flex-wrap align-items-center w-100"> <button type="button" class="btn btn-link nav-link" aria-label="Switch Mode" id="mode-toggle"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://l.technotim.com/links" aria-label="links" target="_blank" rel="noopener noreferrer" > <i class="fa-solid fa-link"></i> </a> <a href="https://twitter.com/technotimlive" aria-label="twitter" target="_blank" rel="noopener noreferrer" > <i class="fa-brands fa-x-twitter"></i> </a> <a href="https://l.technotim.com/github" aria-label="github-custom" target="_blank" rel="noopener noreferrer" > <i class="fab fa-github"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></aside><div id="main-wrapper" class="d-flex justify-content-center"><div class="container d-flex flex-column px-xxl-5"><header id="topbar-wrapper" class="flex-shrink-0" aria-label="Top Bar"><div id="topbar" class="d-flex align-items-center justify-content-between px-lg-3 h-100" ><nav id="breadcrumb" aria-label="Breadcrumb"> <span> <a href="/">Home</a> </span> <span>Traefik 3 and FREE Wildcard Certificates with Docker</span></nav><button type="button" id="sidebar-trigger" class="btn btn-link" aria-label="Sidebar"> <i class="fas fa-bars fa-fw"></i> </button><div id="topbar-title"> Post</div><button type="button" id="search-trigger" class="btn btn-link" aria-label="Search"> <i class="fas fa-search fa-fw"></i> </button> <search id="search" class="align-items-center ms-3 ms-lg-0"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..." > </search> <button type="button" class="btn btn-link text-decoration-none" id="search-cancel">Cancel</button></div></header><div class="row flex-grow-1"><main aria-label="Main Content" class="col-12 col-lg-11 col-xl-9 px-md-4"><article class="px-1" data-toc="true"><header><h1 data-toc-skip>Traefik 3 and FREE Wildcard Certificates with Docker</h1><div class="post-meta text-muted"> <span> Posted <time data-ts="1714482000" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Apr 30, 2024 </time> </span> <span> Updated <time data-ts="1767816200" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Jan 7, 2026 </time> </span><div class="mt-3 mb-3"> <a href="https://images.technotim.com/assets/img/headers/traefik-3-docker-certificates-hero.webp" class="popup img-link preview-img blur"><img data-src="https://images.technotim.com/assets/img/headers/traefik-3-docker-certificates-hero.webp" alt="Preview Image" width="1200" height="630" data-lqip="true" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAUACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP53x+2Cnxy1i40L4pfAv4Y+PvEnj2+T7d418Xaz8U7i+0+B9bfV9NttL0jw34/8K6Tpy6WbhdP+06ZDp+o6tpkS2Ot3uoW7NEf9AMty2hnEMDk2Ex+d5PgJYSniZ4HDYjJquBc8Fh3OSjGpw+sxj9Zu5VXPNKi9raaTpxhRj/NdbEYjDVcRi61HLcXVWIlhqFaphsfHEUadapFJtrNXg5ypNe5JYGm/Zvkbbcpy/Srwv/wSl+At74a8O3l3rni2S6u9C0m5uZEvJYUkuJ7C3lmdIkvNsSvI7Msa/KgIUcAV8piuNJYXE4jDUcroqlhq9WhSTx2OuqdGpKnBO1SKuoxS0SXZJaHswyelOMZ1K9WVScVKcuWkuacknKVuR2u23a7tsf/Z"></a></div><div class="d-flex justify-content-between"> <span> By <em> <a href="https://l.technotim.com/twitter">Techno Tim</a> </em> </span><div> <span class="readtime" data-bs-toggle="tooltip" data-bs-placement="bottom" title="1562 words" > <em>8 min</em> read</span></div></div></div></header><div id="toc-bar" class="d-flex align-items-center justify-content-between invisible"> <span class="label text-truncate">Traefik 3 and FREE Wildcard Certificates with Docker</span> <button type="button" class="toc-trigger btn me-1"> <i class="fa-solid fa-list-ul fa-fw"></i> </button></div><button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-outline-secondary btn-sm"> <span class="label ps-2 pe-1">Contents</span> <i class="fa-solid fa-angle-right fa-fw"></i> </button> <dialog id="toc-popup" class="p-0"><div class="header d-flex flex-row align-items-center justify-content-between"><div class="label text-truncate py-2 ms-4">Traefik 3 and FREE Wildcard Certificates with Docker</div><button id="toc-popup-close" type="button" class="btn mx-1 my-1 opacity-75"> <i class="fas fa-close"></i> </button></div><div id="toc-popup-content" class="px-4 py-3 pb-4"></div></dialog><div class="content"><p>In today’s Traefik tutorial we’ll get FREE Wildcard certificates to use in our HomeLab and with all of our internal self-hosted services. We’re going to set up Traefik 3 in Docker and get Let’s Encrypt certificates using Cloudflare as our DNS Provider (we’ll cover how to set up others too). Then we’ll configure local DNS using PiHole (or any other local DNS) to route to our services that are now protected with secure certificates!</p><iframe class="embed-video" loading="lazy" src="https://www.youtube.com/embed/n1vOfdz5Nm8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe><p>📺 <a href="https://www.youtube.com/watch?v=n1vOfdz5Nm8">Watch Video</a></p><h2 id="disclosures"><span class="me-2">Disclosures</span><a href="#disclosures" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><ul><li>Video was sponsored by UptimeRobot<li>Save 20% on UptimeRobot <a href="https://l.technotim.com/uptime-robot-technotim">https://l.technotim.com/uptime-robot-technotim</a>!</ul><blockquote class="prompt-info"><p><em>Looking to do this same thing in Kubernetes? Check out <a href="/posts/kube-traefik-cert-manager-le/">traefik + cert-manager on Kubernetes</a></em></p></blockquote><blockquote class="prompt-info"><p><em>Looking for the Traefik + Portainer guide? Check out <a href="/posts/traefik-portainer-ssl/">traefik + portainer on Docker</a></em></p></blockquote><p>For reference, the following folder structure was used:</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre>./traefik
+├── data
+│   ├── acme.json
+│   ├── config.yml
+│   └── traefik.yml
+└── cf_api_token.txt
+└── docker-compose.yml
+</pre></table></code></div></div><p>You can also do this with <a href="https://doc.traefik.io/traefik/https/acme/#providers">other DNS providers too</a>!</p><h2 id="docker-setup"><span class="me-2">Docker Setup</span><a href="#docker-setup" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>See <a href="/posts/docker-compose-install/">this post</a> on how to install <code class="language-plaintext highlighter-rouge">docker</code> and <code class="language-plaintext highlighter-rouge">docker-compose</code></p><h2 id="prepare-our-server"><span class="me-2">Prepare Our Server</span><a href="#prepare-our-server" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Create folder for your compose and mounts</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">mkdir </span>docker_volumes
+<span class="nb">cd </span>docker_volumes
+</pre></table></code></div></div><p>then we’ll create a folder to hold traefik files</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">mkdir </span>traefik
+<span class="nb">cd </span>traefik
+</pre></table></code></div></div><p>create docker compose file and add contents</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">touch </span>docker-compose.yaml
+nano docker-compose.yaml
+</pre></table></code></div></div><h2 id="tasks-from-our-compose-file"><span class="me-2">Tasks from Our Compose File</span><a href="#tasks-from-our-compose-file" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><h3 id="docker-compose-contents"><span class="me-2">Docker Compose Contents</span><a href="#docker-compose-contents" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p><code class="language-plaintext highlighter-rouge">docker-compose.yaml</code></p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+</pre><td class="rouge-code"><pre><span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3.8"</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">traefik</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">traefik:v3.0</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">traefik</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+    <span class="na">security_opt</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">no-new-privileges:true</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">proxy</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">80:80</span>
+      <span class="pi">-</span> <span class="s">443:443</span>
+      <span class="c1"># - 443:443/tcp # Uncomment if you want HTTP3</span>
+      <span class="c1"># - 443:443/udp # Uncomment if you want HTTP3</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">CF_DNS_API_TOKEN_FILE</span><span class="pi">:</span> <span class="s">/run/secrets/cf_api_token</span> <span class="c1"># note using _FILE for docker secrets</span>
+      <span class="c1"># CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # if using .env</span>
+      <span class="na">TRAEFIK_DASHBOARD_CREDENTIALS</span><span class="pi">:</span> <span class="s">${TRAEFIK_DASHBOARD_CREDENTIALS}</span>
+    <span class="na">secrets</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">cf_api_token</span>
+    <span class="na">env_file</span><span class="pi">:</span> <span class="s">.env</span> <span class="c1"># use .env</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/etc/localtime:/etc/localtime:ro</span>
+      <span class="pi">-</span> <span class="s">/var/run/docker.sock:/var/run/docker.sock:ro</span>
+      <span class="pi">-</span> <span class="s">./data/traefik.yml:/traefik.yml:ro</span>
+      <span class="pi">-</span> <span class="s">./data/acme.json:/acme.json</span>
+      <span class="c1"># - ./data/config.yml:/config.yml:ro</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.enable=true"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik.entrypoints=http"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik.rule=Host(`traefik-dashboard.local.example.com`)"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik.middlewares=traefik-https-redirect"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.entrypoints=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.local.example.com`)"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.middlewares=traefik-auth"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls=true"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls.domains[0].main=local.example.com"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.example.com"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.service=api@internal"</span>
+
+<span class="na">secrets</span><span class="pi">:</span>
+  <span class="na">cf_api_token</span><span class="pi">:</span>
+    <span class="na">file</span><span class="pi">:</span> <span class="s">./cf_api_token.txt</span>
+
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">proxy</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+</pre></table></code></div></div><h3 id="data-folder"><span class="me-2">data folder</span><a href="#data-folder" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="nb">mkdir </span>data
+<span class="nb">cd </span>data
+<span class="nb">touch </span>acme.json
+<span class="nb">chmod </span>600 acme.json
+</pre></table></code></div></div><h3 id="traefik-config"><span class="me-2">Traefik Config</span><a href="#traefik-config" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">touch </span>traefik.yml
+nano traefik.yml
+</pre></table></code></div></div><p><code class="language-plaintext highlighter-rouge">traefik.yml</code> contents:</p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+</pre><td class="rouge-code"><pre><span class="na">api</span><span class="pi">:</span>
+  <span class="na">dashboard</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">debug</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">entryPoints</span><span class="pi">:</span>
+  <span class="na">http</span><span class="pi">:</span>
+    <span class="na">address</span><span class="pi">:</span> <span class="s2">"</span><span class="s">:80"</span>
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">redirections</span><span class="pi">:</span>
+        <span class="na">entryPoint</span><span class="pi">:</span>
+          <span class="na">to</span><span class="pi">:</span> <span class="s">https</span>
+          <span class="na">scheme</span><span class="pi">:</span> <span class="s">https</span>
+  <span class="na">https</span><span class="pi">:</span>
+    <span class="na">address</span><span class="pi">:</span> <span class="s2">"</span><span class="s">:443"</span>
+<span class="na">serversTransport</span><span class="pi">:</span>
+  <span class="na">insecureSkipVerify</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">providers</span><span class="pi">:</span>
+  <span class="na">docker</span><span class="pi">:</span>
+    <span class="na">endpoint</span><span class="pi">:</span> <span class="s2">"</span><span class="s">unix:///var/run/docker.sock"</span>
+    <span class="na">exposedByDefault</span><span class="pi">:</span> <span class="kc">false</span>
+  <span class="c1"># file:</span>
+  <span class="c1">#   filename: /config.yml</span>
+<span class="na">certificatesResolvers</span><span class="pi">:</span>
+  <span class="na">cloudflare</span><span class="pi">:</span>
+    <span class="na">acme</span><span class="pi">:</span>
+      <span class="na">email</span><span class="pi">:</span> <span class="s">youremail@email.com</span>
+      <span class="na">storage</span><span class="pi">:</span> <span class="s">acme.json</span>
+      <span class="c1"># caServer: https://acme-v02.api.letsencrypt.org/directory # prod (default)</span>
+      <span class="na">caServer</span><span class="pi">:</span> <span class="s">https://acme-staging-v02.api.letsencrypt.org/directory</span> <span class="c1"># staging</span>
+      <span class="na">dnsChallenge</span><span class="pi">:</span>
+        <span class="na">provider</span><span class="pi">:</span> <span class="s">cloudflare</span>
+        <span class="c1">#disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.</span>
+        <span class="c1">#delayBeforeCheck: 60s # uncomment along with disablePropagationCheck if needed to ensure the TXT record is ready before verification is attempted </span>
+        <span class="na">resolvers</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s2">"</span><span class="s">1.1.1.1:53"</span>
+          <span class="pi">-</span> <span class="s2">"</span><span class="s">1.0.0.1:53"</span>
+</pre></table></code></div></div><h3 id="create-docker-network"><span class="me-2">Create Docker Network</span><a href="#create-docker-network" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker network create proxy
+</pre></table></code></div></div><h3 id="cloudflare-api-token-secret"><span class="me-2">Cloudflare API Token Secret</span><a href="#cloudflare-api-token-secret" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">touch </span>cf_api_token.txt
+nano cf_api_token.txt
+</pre></table></code></div></div><p>Paste your token into file from Cloudflare</p><h3 id="traefik-dashboard-password--env"><span class="me-2">Traefik Dashboard Password &amp; .env</span><a href="#traefik-dashboard-password--env" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>make sure you have <code class="language-plaintext highlighter-rouge">htpasswd</code> installed.</p><p>To install on Linux</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>apache2-utils
+</pre></table></code></div></div><p>Mac OS (should already be installed)</p><p>Windows</p><p><code class="language-plaintext highlighter-rouge">htpasswd.exe</code> Should already be installed on Windows</p><p>Generate credential pair</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="nb">echo</span> <span class="si">$(</span>htpasswd <span class="nt">-nB</span> user<span class="si">)</span> | <span class="nb">sed</span> <span class="nt">-e</span> s/<span class="se">\\</span><span class="nv">$/</span><span class="se">\\</span><span class="nv">$\</span><span class="se">\$</span>/g
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">touch</span> .env
+nano .env
+</pre></table></code></div></div><p>paste your credential pair:</p><p>e.g.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="nv">TRAEFIK_DASHBOARD_CREDENTIALS</span><span class="o">=</span>user:<span class="nv">$$</span>2y<span class="nv">$$</span>05<span class="nv">$$</span>lSaEi.G.aIygyXRdiFpt7OqmUMW9QUG5I1N.j0bXoXxIjxQmoGOWu
+</pre></table></code></div></div><h2 id="start-the-stack"><span class="me-2">Start the stack</span><a href="#start-the-stack" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker compose up <span class="nt">-d</span> <span class="nt">--force-recreate</span>
+</pre></table></code></div></div><h2 id="troubleshooting"><span class="me-2">Troubleshooting</span><a href="#troubleshooting" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Common ways to troubleshoot</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>docker ps
+docker logs traefik
+docker <span class="nb">exec</span> <span class="nt">-it</span> traefik /bin/sh
+</pre></table></code></div></div><p>inside of container</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre>top
+<span class="nb">ls
+cat </span>acme.json
+<span class="nb">cat </span>traefik.yml
+<span class="nb">ls</span> /run/secrets
+<span class="nb">cat</span> /run/secrets/cf_api_token
+<span class="nb">echo</span> <span class="k">${</span><span class="nv">CF_DNS_API_TOKEN_FILE</span><span class="k">}</span>
+<span class="nb">echo</span> <span class="k">${</span><span class="nv">TRAEFIK_DASHBOARD_CREDENTIALS</span><span class="k">}</span>
+</pre></table></code></div></div><h2 id="dns"><span class="me-2">DNS</span><a href="#dns" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>nslookup traefik-dashboard.local.example.com
+</pre></table></code></div></div><h2 id="switch-to-production-acme-endpoints"><span class="me-2">Switch to Production Acme Endpoints</span><a href="#switch-to-production-acme-endpoints" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="nn">...</span>
+      <span class="na">caServer</span><span class="pi">:</span> <span class="s">https://acme-v02.api.letsencrypt.org/directory</span> <span class="c1"># prod (default)</span>
+      <span class="c1">#caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging</span>
+<span class="nn">...</span>
+</pre></table></code></div></div><p>Clear out the existing staging certificates</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">cd </span>data
+nano acme.json
+</pre></table></code></div></div><p>Clear and save</p><p>Restart the stack</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker compose up <span class="nt">-d</span> <span class="nt">--force-recreate</span>
+</pre></table></code></div></div><h2 id="adding-another-workload-nginx-demo"><span class="me-2">Adding Another Workload (NGINX Demo)</span><a href="#adding-another-workload-nginx-demo" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="nb">mkdir </span>nginx
+<span class="nb">cd </span>nginx
+<span class="nb">touch </span>docker-compose.yaml
+nano docker-compose.yaml
+</pre></table></code></div></div><p>Contents of <code class="language-plaintext highlighter-rouge">docker-compose.yaml</code></p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre><td class="rouge-code"><pre><span class="na">version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">3.8'</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">nginx</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">nginxdemos/nginx-hello</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.enable=true"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.nginx.rule=Host(`nginx.local.example.com`)"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.nginx.entrypoints=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.nginx.tls=true"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.services.nginx.loadbalancer.server.port=8080"</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">proxy</span>
+
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">proxy</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+</pre></table></code></div></div><p>Check DNS</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>nslookup nginx.local.example.com
+</pre></table></code></div></div><p>Start the new NGINX Stack</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker compose up <span class="nt">-d</span> <span class="nt">--force-recreate</span>
+</pre></table></code></div></div><h3 id="adding-external-routes"><span class="me-2">Adding External Routes</span><a href="#adding-external-routes" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>Uncomment a few things:</p><p>In <code class="language-plaintext highlighter-rouge">docker-compose.yaml</code></p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="nn">...</span>
+      <span class="pi">-</span> <span class="s">./data/config.yml:/config.yml:ro</span>
+<span class="nn">...</span>
+</pre></table></code></div></div><p>in <code class="language-plaintext highlighter-rouge">traefik.yml</code></p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="nn">...</span>
+  <span class="na">file</span><span class="pi">:</span>
+    <span class="na">filename</span><span class="pi">:</span> <span class="s">/config.yml</span>
+<span class="nn">...</span>
+</pre></table></code></div></div><p>Create config</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="nb">cd </span>data
+<span class="nb">touch </span>config.yml
+nano config.yml
+</pre></table></code></div></div><p>Contents of <code class="language-plaintext highlighter-rouge">config.yml</code></p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+</pre><td class="rouge-code"><pre><span class="na">http</span><span class="pi">:</span>
+ <span class="c1">#region routers </span>
+  <span class="na">routers</span><span class="pi">:</span>
+    <span class="na">proxmox</span><span class="pi">:</span>
+      <span class="na">entryPoints</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s2">"</span><span class="s">https"</span>
+      <span class="na">rule</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Host(`proxmox.local.example.com`)"</span>
+      <span class="na">middlewares</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">default-headers</span>
+        <span class="pi">-</span> <span class="s">https-redirectscheme</span>
+      <span class="na">tls</span><span class="pi">:</span> <span class="pi">{}</span>
+      <span class="na">service</span><span class="pi">:</span> <span class="s">proxmox</span>
+    <span class="na">pihole</span><span class="pi">:</span>
+  
+<span class="c1">#endregion</span>
+<span class="c1">#region services</span>
+  <span class="na">services</span><span class="pi">:</span>
+    <span class="na">proxmox</span><span class="pi">:</span>
+      <span class="na">loadBalancer</span><span class="pi">:</span>
+        <span class="na">servers</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">url</span><span class="pi">:</span> <span class="s2">"</span><span class="s">https://192.168.0.17:8006"</span>
+        <span class="na">passHostHeader</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="c1">#endregion</span>
+  <span class="na">middlewares</span><span class="pi">:</span>
+    <span class="na">https-redirectscheme</span><span class="pi">:</span>
+      <span class="na">redirectScheme</span><span class="pi">:</span>
+        <span class="na">scheme</span><span class="pi">:</span> <span class="s">https</span>
+        <span class="na">permanent</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">default-headers</span><span class="pi">:</span>
+      <span class="na">headers</span><span class="pi">:</span>
+        <span class="na">frameDeny</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">browserXssFilter</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">contentTypeNosniff</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">forceSTSHeader</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">stsIncludeSubdomains</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">stsPreload</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">stsSeconds</span><span class="pi">:</span> <span class="m">15552000</span>
+        <span class="na">customFrameOptionsValue</span><span class="pi">:</span> <span class="s">SAMEORIGIN</span>
+        <span class="na">customRequestHeaders</span><span class="pi">:</span>
+          <span class="na">X-Forwarded-Proto</span><span class="pi">:</span> <span class="s">https</span>
+
+    <span class="na">default-whitelist</span><span class="pi">:</span>
+      <span class="na">ipAllowList</span><span class="pi">:</span>
+        <span class="na">sourceRange</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s2">"</span><span class="s">10.0.0.0/8"</span>
+        <span class="pi">-</span> <span class="s2">"</span><span class="s">192.168.0.0/16"</span>
+        <span class="pi">-</span> <span class="s2">"</span><span class="s">172.16.0.0/12"</span>
+
+    <span class="na">secured</span><span class="pi">:</span>
+      <span class="na">chain</span><span class="pi">:</span>
+        <span class="na">middlewares</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">default-whitelist</span>
+        <span class="pi">-</span> <span class="s">default-headers</span>
+</pre></table></code></div></div><p>Restart the stack</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker compose up <span class="nt">-d</span> <span class="nt">--force-recreate</span>
+</pre></table></code></div></div><p>To see more examples of commonly used services check out <a href="https://github.com/timothystewart6/techno-tim.github.io/blob/master/reference_files/traefik-portainer-ssl/traefik/config.yml">config.yml in the reference files</a></p><h2 id="final-production-files"><span class="me-2">Final Production Files</span><a href="#final-production-files" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Traefik <code class="language-plaintext highlighter-rouge">docker-compose.yaml</code></p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+</pre><td class="rouge-code"><pre><span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3.8"</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">traefik</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">traefik:v3.0</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">traefik</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+    <span class="na">security_opt</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">no-new-privileges:true</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">proxy</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">80:80</span>
+      <span class="pi">-</span> <span class="s">443:443</span>
+      <span class="c1"># - 443:443/tcp # Uncomment if you want HTTP3</span>
+      <span class="c1"># - 443:443/udp # Uncomment if you want HTTP3</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">CF_DNS_API_TOKEN_FILE</span><span class="pi">:</span> <span class="s">/run/secrets/cf_api_token</span> <span class="c1"># note using _FILE for docker secrets</span>
+      <span class="c1"># CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # if using .env</span>
+      <span class="na">TRAEFIK_DASHBOARD_CREDENTIALS</span><span class="pi">:</span> <span class="s">${TRAEFIK_DASHBOARD_CREDENTIALS}</span>
+    <span class="na">secrets</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">cf_api_token</span>
+    <span class="na">env_file</span><span class="pi">:</span> <span class="s">.env</span> <span class="c1"># use .env</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/etc/localtime:/etc/localtime:ro</span>
+      <span class="pi">-</span> <span class="s">/var/run/docker.sock:/var/run/docker.sock:ro</span>
+      <span class="pi">-</span> <span class="s">./data/traefik.yml:/traefik.yml:ro</span>
+      <span class="pi">-</span> <span class="s">./data/acme.json:/acme.json</span>
+      <span class="pi">-</span> <span class="s">./data/config.yml:/config.yml:ro</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.enable=true"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik.entrypoints=http"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik.rule=Host(`traefik-dashboard.local.example.com`)"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik.middlewares=traefik-https-redirect"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.entrypoints=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.local.example.com`)"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.middlewares=traefik-auth"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls=true"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls.domains[0].main=local.example.com"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.example.com"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.service=api@internal"</span>
+
+<span class="na">secrets</span><span class="pi">:</span>
+  <span class="na">cf_api_token</span><span class="pi">:</span>
+    <span class="na">file</span><span class="pi">:</span> <span class="s">./cf_api_token.txt</span>
+
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">proxy</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+</pre></table></code></div></div><p><code class="language-plaintext highlighter-rouge">traefik.yml</code></p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+</pre><td class="rouge-code"><pre><span class="na">api</span><span class="pi">:</span>
+  <span class="na">dashboard</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">debug</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">entryPoints</span><span class="pi">:</span>
+  <span class="na">http</span><span class="pi">:</span>
+    <span class="na">address</span><span class="pi">:</span> <span class="s2">"</span><span class="s">:80"</span>
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">redirections</span><span class="pi">:</span>
+        <span class="na">entryPoint</span><span class="pi">:</span>
+          <span class="na">to</span><span class="pi">:</span> <span class="s">https</span>
+          <span class="na">scheme</span><span class="pi">:</span> <span class="s">https</span>
+  <span class="na">https</span><span class="pi">:</span>
+    <span class="na">address</span><span class="pi">:</span> <span class="s2">"</span><span class="s">:443"</span>
+<span class="na">serversTransport</span><span class="pi">:</span>
+  <span class="na">insecureSkipVerify</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">providers</span><span class="pi">:</span>
+  <span class="na">docker</span><span class="pi">:</span>
+    <span class="na">endpoint</span><span class="pi">:</span> <span class="s2">"</span><span class="s">unix:///var/run/docker.sock"</span>
+    <span class="na">exposedByDefault</span><span class="pi">:</span> <span class="kc">false</span>
+  <span class="na">file</span><span class="pi">:</span>
+    <span class="na">filename</span><span class="pi">:</span> <span class="s">/config.yml</span>
+<span class="na">certificatesResolvers</span><span class="pi">:</span>
+  <span class="na">cloudflare</span><span class="pi">:</span>
+    <span class="na">acme</span><span class="pi">:</span>
+      <span class="na">email</span><span class="pi">:</span> <span class="s">youremail@email.com</span>
+      <span class="na">storage</span><span class="pi">:</span> <span class="s">acme.json</span>
+      <span class="na">caServer</span><span class="pi">:</span> <span class="s">https://acme-v02.api.letsencrypt.org/directory</span> <span class="c1"># prod (default)</span>
+      <span class="c1"># caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging</span>
+      <span class="na">dnsChallenge</span><span class="pi">:</span>
+        <span class="na">provider</span><span class="pi">:</span> <span class="s">cloudflare</span>
+        <span class="c1">#disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.</span>
+        <span class="c1">#delayBeforeCheck: 60s # uncomment along with disablePropagationCheck if needed to ensure the TXT record is ready before verification is attempted </span>
+        <span class="na">resolvers</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s2">"</span><span class="s">1.1.1.1:53"</span>
+          <span class="pi">-</span> <span class="s2">"</span><span class="s">1.0.0.1:53"</span>
+</pre></table></code></div></div><p><code class="language-plaintext highlighter-rouge">config.yml</code></p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+</pre><td class="rouge-code"><pre><span class="na">http</span><span class="pi">:</span>
+ <span class="c1">#region routers </span>
+  <span class="na">routers</span><span class="pi">:</span>
+    <span class="na">proxmox</span><span class="pi">:</span>
+      <span class="na">entryPoints</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s2">"</span><span class="s">https"</span>
+      <span class="na">rule</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Host(`proxmox.local.example.com`)"</span>
+      <span class="na">middlewares</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">default-headers</span>
+        <span class="pi">-</span> <span class="s">https-redirectscheme</span>
+      <span class="na">tls</span><span class="pi">:</span> <span class="pi">{}</span>
+      <span class="na">service</span><span class="pi">:</span> <span class="s">proxmox</span>
+    <span class="na">pihole</span><span class="pi">:</span>
+  
+<span class="c1">#endregion</span>
+<span class="c1">#region services</span>
+  <span class="na">services</span><span class="pi">:</span>
+    <span class="na">proxmox</span><span class="pi">:</span>
+      <span class="na">loadBalancer</span><span class="pi">:</span>
+        <span class="na">servers</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">url</span><span class="pi">:</span> <span class="s2">"</span><span class="s">https://192.168.0.17:8006"</span>
+        <span class="na">passHostHeader</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="c1">#endregion</span>
+  <span class="na">middlewares</span><span class="pi">:</span>
+    <span class="na">https-redirectscheme</span><span class="pi">:</span>
+      <span class="na">redirectScheme</span><span class="pi">:</span>
+        <span class="na">scheme</span><span class="pi">:</span> <span class="s">https</span>
+        <span class="na">permanent</span><span class="pi">:</span> <span class="kc">true</span>
+    <span class="na">default-headers</span><span class="pi">:</span>
+      <span class="na">headers</span><span class="pi">:</span>
+        <span class="na">frameDeny</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">browserXssFilter</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">contentTypeNosniff</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">forceSTSHeader</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">stsIncludeSubdomains</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">stsPreload</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">stsSeconds</span><span class="pi">:</span> <span class="m">15552000</span>
+        <span class="na">customFrameOptionsValue</span><span class="pi">:</span> <span class="s">SAMEORIGIN</span>
+        <span class="na">customRequestHeaders</span><span class="pi">:</span>
+          <span class="na">X-Forwarded-Proto</span><span class="pi">:</span> <span class="s">https</span>
+
+    <span class="na">default-whitelist</span><span class="pi">:</span>
+      <span class="na">ipAllowList</span><span class="pi">:</span>
+        <span class="na">sourceRange</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s2">"</span><span class="s">10.0.0.0/8"</span>
+        <span class="pi">-</span> <span class="s2">"</span><span class="s">192.168.0.0/16"</span>
+        <span class="pi">-</span> <span class="s2">"</span><span class="s">172.16.0.0/12"</span>
+
+    <span class="na">secured</span><span class="pi">:</span>
+      <span class="na">chain</span><span class="pi">:</span>
+        <span class="na">middlewares</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">default-whitelist</span>
+        <span class="pi">-</span> <span class="s">default-headers</span>
+</pre></table></code></div></div><h2 id="join-the-conversation"><span class="me-2">Join the conversation</span><a href="#join-the-conversation" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><blockquote class="twitter-tweet" data-dnt="true" data-theme="dark"><p lang="en" dir="ltr">Traefik 3 is here! So, today we&#39;ll get trusted certificates with Let&#39;s Encrypt for all of our self-hosted services! No more https warnings and no more weird ports!<a href="https://t.co/MoRKYXvA0M">https://t.co/MoRKYXvA0M</a> <a href="https://t.co/5OR22iRJRJ">pic.twitter.com/5OR22iRJRJ</a></p>&mdash; Techno Tim (@TechnoTimLive) <a href="https://twitter.com/TechnoTimLive/status/1785328960177356804?ref_src=twsrc%5Etfw">April 30, 2024</a></blockquote><script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script><h2 id="links"><span class="me-2">Links</span><a href="#links" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>🛍️ Check out the new Merch Shop at <a href="https://l.technotim.com/shop">https://l.technotim.com/shop</a></p><p>⚙️ See all the hardware I recommend at <a href="https://l.technotim.com/gear">https://l.technotim.com/gear</a></p><p>🚀 Don’t forget to check out the <a href="https://l.technotim.com/quick-start">🚀Launchpad repo</a> with all of the quick start source files</p><p>🤝 Support me and <a href="/sponsor">help keep this site ad-free!</a></p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw me-1"></i> <a href="/categories/homelab/">homelab</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw me-1"></i> <a href="/tags/traefik/" class="post-tag no-text-decoration" >traefik</a> <a href="/tags/docker/" class="post-tag no-text-decoration" >docker</a> <a href="/tags/cloudflare/" class="post-tag no-text-decoration" >cloudflare</a> <a href="/tags/pihole/" class="post-tag no-text-decoration" >pihole</a> <a href="/tags/lets-encrypt/" class="post-tag no-text-decoration" >lets-encrypt</a></div><div class=" post-tail-bottom d-flex justify-content-between align-items-center mt-5 pb-2 " ><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper d-flex align-items-center"> <span class="share-label text-muted">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Traefik%203%20and%20FREE%20Wildcard%20Certificates%20with%20Docker%20-%20Techno%20Tim&url=https%3A%2F%2Ftechnotim.com%2Fposts%2Ftraefik-3-docker-certificates%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter"> <i class="fa-fw fa-brands fa-square-x-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Traefik%203%20and%20FREE%20Wildcard%20Certificates%20with%20Docker%20-%20Techno%20Tim&u=https%3A%2F%2Ftechnotim.com%2Fposts%2Ftraefik-3-docker-certificates%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Ftraefik-3-docker-certificates%2F&text=Traefik%203%20and%20FREE%20Wildcard%20Certificates%20with%20Docker%20-%20Techno%20Tim" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Ftraefik-3-docker-certificates%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Linkedin" aria-label="Linkedin"> <i class="fa-fw fab fa-linkedin"></i> </a> <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/share-to-mastodon/+esm"></script> <button class="btn text-start" data-bs-toggle="tooltip" data-bs-placement="top" title="Mastodon" aria-label="Mastodon"> <share-to-mastodon class="share-mastodon" message="Traefik%203%20and%20FREE%20Wildcard%20Certificates%20with%20Docker%20-%20Techno%20Tim" url="https%3A%2F%2Ftechnotim.com%2Fposts%2Ftraefik-3-docker-certificates%2F"customInstanceList="[{&quot;label&quot;:&quot;mastodon.social&quot;,&quot;link&quot;:&quot;https://mastodon.social/&quot;},{&quot;label&quot;:&quot;mastodon.online&quot;,&quot;link&quot;:&quot;https://mastodon.online/&quot;},{&quot;label&quot;:&quot;fosstodon.org&quot;,&quot;link&quot;:&quot;https://fosstodon.org/&quot;},{&quot;label&quot;:&quot;photog.social&quot;,&quot;link&quot;:&quot;https://photog.social/&quot;}]" > <i class="fa-fw fa-brands fa-mastodon"></i> </share-to-mastodon> </button> <button id="copy-link" aria-label="Copy link" class="btn small" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy link" data-title-succeed="Link copied successfully!" > <i class="fa-fw fas fa-link pe-none fs-6"></i> </button> </span></div></div></div></article></main><aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 text-muted"><div class="access"><section id="access-lastmod"><h2 class="panel-heading">Recently Updated</h2><ul class="content list-unstyled ps-0 pb-1 ms-1 mt-2"><li class="text-truncate lh-lg"> <a href="/posts/homelab-hardware-tour-2026/">My 2026 Homelab Tour (Rack + Servers + Network + Storage)</a><li class="text-truncate lh-lg"> <a href="/posts/beelink-me-pro/">Beelink ME Pro: Tiny NAS, Stacked Hardware</a><li class="text-truncate lh-lg"> <a href="/posts/paperless-ngx-local-ai/">Self-Hosted Paperless-ngx + Optional Local AI: Private Documents and Improves OCR & Search (Full Setup)</a><li class="text-truncate lh-lg"> <a href="/posts/homelab-services-tour-2022/">Techno Tim HomeLab Services Tour (Late 2022) - What am I Self-Hosting in my HomeLab?</a><li class="text-truncate lh-lg"> <a href="/posts/truenas-zfs-expand/">The EASIEST way to Expand Your ZFS Pool in TrueNAS (But is it the Best?)</a></ul></section><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div class="toc-border-cover z-3"></div><section id="toc-wrapper" class="invisible position-sticky ps-0 pe-4 pb-4"><h2 class="panel-heading ps-3 pb-2 mb-0">Contents</h2><nav id="toc"></nav></section></aside></div><div class="row"><div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4"><aside id="related-posts" aria-labelledby="related-label"><h3 class="mb-4" id="related-label">Further Reading</h3><nav class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4"><article class="col"> <a href="/posts/kube-traefik-cert-manager-le/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1659794400" data-df="ll" > Aug 6, 2022 </time><h4 class="pt-0 my-2">Wildcard Certificates with Traefik + cert-manager + Let's Encrypt in Kubernetes Tutorial</h4><div class="text-muted"><p>Traefik, cert-manager, Cloudflare, and Let’s Encrypt are a winning combination when it comes to securing your services with certificates in Kubernetes.Today, we’ll install and configure Traefik, th...</p></div></div></a></article><article class="col"> <a href="/posts/webtop-container/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1624197600" data-df="ll" > Jun 20, 2021 </time><h4 class="pt-0 my-2">Linux desktop, inside of a container, inside of a browser??? Yes. A Webtop.</h4><div class="text-muted"><p>Have you ever thought about running a Linux desktop inside of a container? Me neither until I found this awesome project from LinuxServer called Webtops.A webtop is a technology stack that allows ...</p></div></div></a></article><article class="col"> <a href="/posts/authelia-traefik/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1622901600" data-df="ll" > Jun 5, 2021 </time><h4 class="pt-0 my-2">2 Factor Auth and Single Sign on with Authelia</h4><div class="text-muted"><p>Authelia is an open source Single Sign On and 2FA companion for reverse proxies.It helps you secure your endpoints with single factor and 2 factor auth.It works with Nginx, Traefik, and HA proxy.To...</p></div></div></a></article></nav></aside><nav class="post-navigation d-flex justify-content-between" aria-label="Post Navigation"> <a href="/posts/udm-pro-max/" class="btn btn-outline-primary" aria-label="Older" ><p>FINALLY! A New UniFi Dream Machine!</p></a> <a href="/posts/ultimate-homelab-server/" class="btn btn-outline-primary" aria-label="Newer" ><p>Building My ULTIMATE, All-inOne, HomeLab Server</p></a></nav><footer aria-label="Site Info" class=" d-flex flex-column justify-content-center text-muted flex-lg-row justify-content-lg-between align-items-lg-center pb-lg-3 " ><p>© <time>2026</time> <a href="https://l.technotim.com/twitter">Techno Tim</a>. <span data-bs-toggle="tooltip" data-bs-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author." >Some rights reserved.</span></p><p><a href="/sponsor/">🤝 Help keep this ad-free!</href> &nbsp; &nbsp;<a href="https://l.technotim.com/shop">🛍️ Check out the new merch shop!</href></p></footer></div></div><div id="search-result-wrapper" class="d-flex justify-content-center d-none"><div class="col-11 content"><div id="search-hints"><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><aside aria-label="Scroll to Top"> <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow"> <i class="fas fa-angle-up"></i> </button></aside></div><div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div><script> document.addEventListener('DOMContentLoaded', () => { SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<article class="px-1 px-sm-2 px-lg-4 px-xl-0"><header><h2><a href="{url}">{title}</a></h2><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div></header><p>{content}</p></article>', noResultsText: '<p class="mt-5">Oops! No results found.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="me-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); }); </script>

@@ -1,0 +1,333 @@
+<!doctype html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width, user-scalable=no initial-scale=1, shrink-to-fit=no, viewport-fit=cover" ><meta name="generator" content="Jekyll v4.4.1" /><meta property="og:title" content="Automate Cloudflare with Terraform and GitHub Actions! - Terraform Tutorial for Beginners" /><meta property="og:locale" content="en" /><meta name="description" content="Today, we’re going to set up and configure Terraform on your machine so we can start using Terraform.Then we’ll configure cf-terraforming to import our Cloudflare state and configuration into Terraform.After that we’ll set up a GitHub report and configure GitHub actions so you have CI and CD for deploying your Infrastructure automatically using a Git Flow.If you’re new to Terraform, that’s fine! This is a beginner tutorial for Terraform and by the end of this, you will feel like an expert!" /><meta property="og:description" content="Today, we’re going to set up and configure Terraform on your machine so we can start using Terraform.Then we’ll configure cf-terraforming to import our Cloudflare state and configuration into Terraform.After that we’ll set up a GitHub report and configure GitHub actions so you have CI and CD for deploying your Infrastructure automatically using a Git Flow.If you’re new to Terraform, that’s fine! This is a beginner tutorial for Terraform and by the end of this, you will feel like an expert!" /><link rel="canonical" href="https://technotim.com/posts/terraform-cloudflare-github/" /><meta property="og:url" content="https://technotim.com/posts/terraform-cloudflare-github/" /><meta property="og:site_name" content="Techno Tim" /><meta property="og:image" content="https://images.technotim.com/assets/img/headers/terraform-mars.webp" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2023-03-25T10:00:00-05:00" /><meta name="twitter:card" content="summary_large_image" /><meta property="twitter:image" content="https://images.technotim.com/assets/img/headers/terraform-mars.webp" /><meta property="twitter:title" content="Automate Cloudflare with Terraform and GitHub Actions! - Terraform Tutorial for Beginners" /><meta name="twitter:site" content="@technotimlive" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-01-07T14:03:20-06:00","datePublished":"2023-03-25T10:00:00-05:00","description":"Today, we’re going to set up and configure Terraform on your machine so we can start using Terraform.Then we’ll configure cf-terraforming to import our Cloudflare state and configuration into Terraform.After that we’ll set up a GitHub report and configure GitHub actions so you have CI and CD for deploying your Infrastructure automatically using a Git Flow.If you’re new to Terraform, that’s fine! This is a beginner tutorial for Terraform and by the end of this, you will feel like an expert!","headline":"Automate Cloudflare with Terraform and GitHub Actions! - Terraform Tutorial for Beginners","image":{"lqip":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAUACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP41tP8AF+r+CvAV/oGhQ6LFDHb6frsmtzaDpT+NIr5Nev8AQ7OLRvG8VtB4m0DTVtr6WTU9N03UI7XWXWOO7RYF8o/YxzHEZrk/CnEmCxOZ5DxDwrlWaRp5hlGdZxh6GYU83zXL8FL67lUMbDLMTWwcJVJ4HE47DY6tgp1qs8DLCVJzqS+/z7g/LchxvHfCklDN+Fswlk2YYzJM2wuGxNCrjMBiK6w2IpzVOLw9T2UqdHEqhGFPFQp2qwcJOC/bD4P/AAt8Q+J/hJ8LfEt3r/gGe78Q/DnwRrl1PqvwottV1Sa41bwzpl/NLqWqHxbaHUr+SS4Z7y/NrbG8uDJcG3h8zy1/pTK+JMVicsy7EYrH8T1cVXwGErYmrDibEUoVK9XD051qkaUcHKNKM6kpSjTUmoJqKbSufy9W8Jcodaq8PT4ew+HdWo6GH/1Ty+r7Ci5v2VH2ssSpVPZQ5Ye0klKfLzNJs//Z","url":"https://images.technotim.com/assets/img/headers/terraform-mars.webp","@type":"imageObject"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://technotim.com/posts/terraform-cloudflare-github/"},"url":"https://technotim.com/posts/terraform-cloudflare-github/"}</script><title>Automate Cloudflare with Terraform and GitHub Actions! - Terraform Tutorial for Beginners | Techno Tim</title><link rel="icon" type="image/png" href="/assets/img/favicons/favicon-96x96.png" sizes="96x96"><link rel="icon" type="image/svg+xml" href="/assets/img/favicons/favicon.svg"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="/assets/css/jekyll-theme-chirpy.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4.36.4/dist/tocbot.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css"> <script src="/assets/js/dist/theme.min.js"></script> <script defer src="https://cdn.jsdelivr.net/combine/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js,npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.umd.min.js,npm/glightbox@3.3.0/dist/js/glightbox.min.js,npm/clipboard@2.0.11/dist/clipboard.min.js,npm/dayjs@1.11.18/dayjs.min.js,npm/dayjs@1.11.18/locale/en.js,npm/dayjs@1.11.18/plugin/relativeTime.js,npm/dayjs@1.11.18/plugin/localizedFormat.js,npm/tocbot@4.36.4/dist/tocbot.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=G-NZ5V7DM8F5"></script> <script> document.addEventListener('DOMContentLoaded', () => { window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-NZ5V7DM8F5'); }); </script><body><aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end"><header class="profile-wrapper"> <a href="/" id="avatar" class="rounded-circle"><img src="https://avatars.githubusercontent.com/u/1322205?s=400&u=5b4f2219006577dc0426007fe5a02391c4899677&v=4" width="112" height="112" alt="avatar" onerror="this.style.display='none'"></a> <a class="site-title d-block" href="/">Techno Tim</a><p class="site-subtitle fst-italic mb-0">Engineer. Builder. Creator. | From Code to Cloud</p></header><nav class="flex-column flex-grow-1 w-100 ps-0"><ul class="nav"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle"></i> <span>ABOUT</span> </a><li class="nav-item"> <a href="/shop/" class="nav-link"> <i class="fa-fw fas fa-bag-shopping"></i> <span>MERCH</span> </a><li class="nav-item"> <a href="/sponsor/" class="nav-link"> <i class="fa-fw fas fa-handshake"></i> <span>SPONSOR</span> </a></ul></nav><div class="sidebar-bottom d-flex flex-wrap align-items-center w-100"> <button type="button" class="btn btn-link nav-link" aria-label="Switch Mode" id="mode-toggle"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://l.technotim.com/links" aria-label="links" target="_blank" rel="noopener noreferrer" > <i class="fa-solid fa-link"></i> </a> <a href="https://twitter.com/technotimlive" aria-label="twitter" target="_blank" rel="noopener noreferrer" > <i class="fa-brands fa-x-twitter"></i> </a> <a href="https://l.technotim.com/github" aria-label="github-custom" target="_blank" rel="noopener noreferrer" > <i class="fab fa-github"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></aside><div id="main-wrapper" class="d-flex justify-content-center"><div class="container d-flex flex-column px-xxl-5"><header id="topbar-wrapper" class="flex-shrink-0" aria-label="Top Bar"><div id="topbar" class="d-flex align-items-center justify-content-between px-lg-3 h-100" ><nav id="breadcrumb" aria-label="Breadcrumb"> <span> <a href="/">Home</a> </span> <span>Automate Cloudflare with Terraform and GitHub Actions! - Terraform Tutorial for Beginners</span></nav><button type="button" id="sidebar-trigger" class="btn btn-link" aria-label="Sidebar"> <i class="fas fa-bars fa-fw"></i> </button><div id="topbar-title"> Post</div><button type="button" id="search-trigger" class="btn btn-link" aria-label="Search"> <i class="fas fa-search fa-fw"></i> </button> <search id="search" class="align-items-center ms-3 ms-lg-0"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..." > </search> <button type="button" class="btn btn-link text-decoration-none" id="search-cancel">Cancel</button></div></header><div class="row flex-grow-1"><main aria-label="Main Content" class="col-12 col-lg-11 col-xl-9 px-md-4"><article class="px-1" data-toc="true"><header><h1 data-toc-skip>Automate Cloudflare with Terraform and GitHub Actions! - Terraform Tutorial for Beginners</h1><div class="post-meta text-muted"> <span> Posted <time data-ts="1679756400" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Mar 25, 2023 </time> </span> <span> Updated <time data-ts="1767816200" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Jan 7, 2026 </time> </span><div class="mt-3 mb-3"> <a href="https://images.technotim.com/assets/img/headers/terraform-mars.webp" class="popup img-link preview-img blur"><img data-src="https://images.technotim.com/assets/img/headers/terraform-mars.webp" alt="Preview Image" width="1200" height="630" data-lqip="true" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAUACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP41tP8AF+r+CvAV/oGhQ6LFDHb6frsmtzaDpT+NIr5Nev8AQ7OLRvG8VtB4m0DTVtr6WTU9N03UI7XWXWOO7RYF8o/YxzHEZrk/CnEmCxOZ5DxDwrlWaRp5hlGdZxh6GYU83zXL8FL67lUMbDLMTWwcJVJ4HE47DY6tgp1qs8DLCVJzqS+/z7g/LchxvHfCklDN+Fswlk2YYzJM2wuGxNCrjMBiK6w2IpzVOLw9T2UqdHEqhGFPFQp2qwcJOC/bD4P/AAt8Q+J/hJ8LfEt3r/gGe78Q/DnwRrl1PqvwottV1Sa41bwzpl/NLqWqHxbaHUr+SS4Z7y/NrbG8uDJcG3h8zy1/pTK+JMVicsy7EYrH8T1cVXwGErYmrDibEUoVK9XD051qkaUcHKNKM6kpSjTUmoJqKbSufy9W8Jcodaq8PT4ew+HdWo6GH/1Ty+r7Ci5v2VH2ssSpVPZQ5Ye0klKfLzNJs//Z"></a></div><div class="d-flex justify-content-between"> <span> By <em> <a href="https://l.technotim.com/twitter">Techno Tim</a> </em> </span><div> <span class="readtime" data-bs-toggle="tooltip" data-bs-placement="bottom" title="1700 words" > <em>9 min</em> read</span></div></div></div></header><div id="toc-bar" class="d-flex align-items-center justify-content-between invisible"> <span class="label text-truncate">Automate Cloudflare with Terraform and GitHub Actions! - Terraform Tutorial for Beginners</span> <button type="button" class="toc-trigger btn me-1"> <i class="fa-solid fa-list-ul fa-fw"></i> </button></div><button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-outline-secondary btn-sm"> <span class="label ps-2 pe-1">Contents</span> <i class="fa-solid fa-angle-right fa-fw"></i> </button> <dialog id="toc-popup" class="p-0"><div class="header d-flex flex-row align-items-center justify-content-between"><div class="label text-truncate py-2 ms-4">Automate Cloudflare with Terraform and GitHub Actions! - Terraform Tutorial for Beginners</div><button id="toc-popup-close" type="button" class="btn mx-1 my-1 opacity-75"> <i class="fas fa-close"></i> </button></div><div id="toc-popup-content" class="px-4 py-3 pb-4"></div></dialog><div class="content"><p>Today, we’re going to set up and configure Terraform on your machine so we can start using Terraform.Then we’ll configure <code class="language-plaintext highlighter-rouge">cf-terraforming</code> to import our Cloudflare state and configuration into Terraform.After that we’ll set up a GitHub report and configure GitHub actions so you have CI and CD for deploying your Infrastructure automatically using a Git Flow.If you’re new to Terraform, that’s fine! This is a beginner tutorial for Terraform and by the end of this, you will feel like an expert!</p><iframe class="embed-video" loading="lazy" src="https://www.youtube.com/embed/FmYvrxYvBP0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe><p>📺 <a href="https://www.youtube.com/watch?v=FmYvrxYvBP0">Watch Video</a></p><h2 id="what-is-terraform-and-how-does-it-help"><span class="me-2">What is Terraform and how does it help?</span><a href="#what-is-terraform-and-how-does-it-help" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Terraform is a powerful infrastructure as code tool to help you create and manage infrastructure across multiple public or private clouds. It can help you provision, configure, and manage infrastructure using their simple and human readable configuration language. Using Terraform helps you automate your infrastructure and your DevOps workflow, do it consistently, and allows you to collaborate with teams in Git.</p><p>There are 7 key areas where Terraform shines:</p><ul><li><p>Automation: Terraform enables automation of infrastructure provisioning, configuration, and management, which reduces human error and saves time.</p><li><p>Consistency: Terraform ensures that your infrastructure is consistent across all environments, from development to production.</p><li><p>Collaboration: Terraform allows multiple teams to work together on infrastructure changes, using version control systems like Git.</p><li><p>Cloud-agnostic: Terraform supports various cloud providers, including AWS, Google Cloud, and Microsoft Azure, allowing you to use the same tool to manage resources across different clouds.</p><li><p>Scalability: Terraform is designed to handle large-scale infrastructure deployments and can easily manage thousands of resources.</p><li><p>Reusability: Terraform modules enable you to reuse code and infrastructure components across multiple projects, making it easier to manage infrastructure at scale.</p><li><p>Flexibility: Terraform is highly flexible and can be extended through plugins to integrate with other tools and services.</p></ul><h2 id="installing-terraform"><span class="me-2">Installing Terraform</span><a href="#installing-terraform" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>This will work on Ubuntu and Windows + WSL</p><p><a href="https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli">Install <code class="language-plaintext highlighter-rouge">terraform</code> for other platforms</a></p><p>Install dependencies</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install  </span>software-properties-common gnupg2 curl
+</pre></table></code></div></div><p>Import the gpg key</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>curl https://apt.releases.hashicorp.com/gpg | gpg <span class="nt">--dearmor</span> <span class="o">&gt;</span> hashicorp.gpg
+<span class="nb">sudo install</span> <span class="nt">-o</span> root <span class="nt">-g</span> root <span class="nt">-m</span> 644 hashicorp.gpg /etc/apt/trusted.gpg.d/
+</pre></table></code></div></div><p>Add hashicorp repository</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="nb">sudo </span>apt-add-repository <span class="s2">"deb [arch=</span><span class="si">$(</span>dpkg <span class="nt">--print-architecture</span><span class="si">)</span><span class="s2">] https://apt.releases.hashicorp.com </span><span class="si">$(</span>lsb_release <span class="nt">-cs</span><span class="si">)</span><span class="s2"> main"</span>
+</pre></table></code></div></div><p>Install <code class="language-plaintext highlighter-rouge">terraform</code></p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="nb">sudo </span>apt <span class="nb">install </span>terraform
+</pre></table></code></div></div><p>Check the version</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>terraform <span class="nt">--version</span>
+Terraform v1.4.0
+on linux_amd64
+</pre></table></code></div></div><h2 id="create-your-terraform-cloudflare-config"><span class="me-2">Create your Terraform Cloudflare config</span><a href="#create-your-terraform-cloudflare-config" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>First create a simple terraform config:</p><div file="cloudflare.tf" class="language-hcl highlighter-rouge"><div class="code-header"> <span data-label-text="cloudflare.tf"><i class="far fa-file-code fa-fw"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre><td class="rouge-code"><pre><span class="nx">terraform</span> <span class="p">{</span>
+  <span class="nx">required_providers</span> <span class="p">{</span>
+    <span class="nx">cloudflare</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nx">source</span>  <span class="o">=</span> <span class="s2">"cloudflare/cloudflare"</span>
+      <span class="nx">version</span> <span class="o">=</span> <span class="s2">"~&gt; 3.0"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">provider</span> <span class="s2">"cloudflare"</span> <span class="p">{</span>
+  <span class="nx">api_token</span> <span class="o">=</span> <span class="nx">var</span><span class="p">.</span><span class="nx">cloudflare_api_token</span>
+<span class="p">}</span>
+
+<span class="c1"># Create a record</span>
+<span class="nx">resource</span> <span class="s2">"cloudflare_record"</span> <span class="s2">"www"</span> <span class="p">{</span>
+  <span class="c1"># ...</span>
+<span class="p">}</span>
+
+<span class="c1"># Create a page rule</span>
+<span class="nx">resource</span> <span class="s2">"cloudflare_page_rule"</span> <span class="s2">"www"</span> <span class="p">{</span>
+  <span class="c1"># ...</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>Here is my <code class="language-plaintext highlighter-rouge">.editorconfig</code>:</p><div file=".editorconfig" class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text=".editorconfig"><i class="far fa-file-code fa-fw"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="c"># http://editorconfig.org</span>
+root <span class="o">=</span> <span class="nb">true</span>
+
+<span class="o">[</span><span class="k">*</span><span class="o">]</span>
+indent_style <span class="o">=</span> space
+indent_size <span class="o">=</span> 2
+charset <span class="o">=</span> utf-8
+trim_trailing_whitespace <span class="o">=</span> <span class="nb">true
+</span>insert_final_newline <span class="o">=</span> <span class="nb">true</span>
+
+<span class="o">[</span><span class="k">*</span>.md]
+trim_trailing_whitespace <span class="o">=</span> <span class="nb">false</span>
+</pre></table></code></div></div><p>Initialize terraform and Cloudflare</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>terraform init
+</pre></table></code></div></div><p>We should see that it installed plugins, and it should have created a lock file.</p><h2 id="terraform-plan-and-apply"><span class="me-2">Terraform Plan and Apply</span><a href="#terraform-plan-and-apply" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Next we’ll want to review our plan, we can see our proposed changes</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>terraform plan
+</pre></table></code></div></div><p>Next we’ll apply our changes.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>terraform apply
+</pre></table></code></div></div><p>Verify on the dashboard.</p><p>After applying we can verify the results.</p><p>we can also test with <code class="language-plaintext highlighter-rouge">nslookup</code></p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>nslookup yoursite.example.com
+</pre></table></code></div></div><p>Check Cloudflare’s site.</p><p>if we run plan again, we can see there’s no work to do</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>terraform apply
+</pre></table></code></div></div><p>Should see that there isn’t any work to do.</p><h2 id="importing-cloudflare-state"><span class="me-2">Importing Cloudflare State</span><a href="#importing-cloudflare-state" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>We will need to import our Cloudflare state into our local Terraform state.</p><blockquote><p>An important point to understand about Terraform is that it can only manage configuration it created or was explicitly told about after the fact. The reason for this limitation is that Terraform expects to be authoritative for the resources it manages. It relies on two types of files to understand what resources it controls and what state they are in. Terraform determines when and how to make changes from the following:</p><ul><li>A configuration file (ending in .tf) that defines the configuration of resources for Terraform to manage. This is what you worked with in the tutorial steps.<li>A local state file that maps the resource names defined in your configuration file — for example, cloudflare_load_balancer.www-lb — to the resources that exist in Cloudflare.</ul></blockquote><p><a href="https://developers.cloudflare.com/terraform/advanced-topics/import-cloudflare-resources/">https://developers.cloudflare.com/terraform/advanced-topics/import-cloudflare-resources/</a></p><p>So this means that we need to sync the remote state of Cloudflare, down to our local state.</p><p>This is where <code class="language-plaintext highlighter-rouge">cf-terraforming</code> can help</p><p>Check for the latest version here: <a href="https://github.com/cloudflare/cf-terraforming/tags">https://github.com/cloudflare/cf-terraforming/tags</a></p><p>Update this command with the latest tag</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre>curl <span class="nt">-L</span> https://github.com/cloudflare/cf-terraforming/releases/download/v0.11.0/cf-terraforming_0.11.0_linux_amd64.tar.gz <span class="nt">-o</span> cf-terraforming.tar.gz
+
+<span class="nb">tar</span> <span class="nt">-xzf</span> cf-terraforming.tar.gz
+
+<span class="nb">rm </span>cf-terraforming.tar.gz
+
+<span class="nb">sudo mv</span> ./cf-terraforming /usr/local/bin
+
+<span class="nb">sudo chmod</span> +x /usr/local/bin/cf-terraforming
+</pre></table></code></div></div><p>Then we need to updated our <code class="language-plaintext highlighter-rouge">.zshrc</code> or <code class="language-plaintext highlighter-rouge">.bashrc</code> with our variables</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>nano ~/.zshrc
+</pre></table></code></div></div><div file="~/.zshrc" class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="~/.zshrc"><i class="far fa-file-code fa-fw"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">export </span><span class="nv">CLOUDFLARE_API_TOKEN</span><span class="o">=</span><span class="s1">'12345'</span>
+<span class="nb">export </span><span class="nv">CLOUDFLARE_ZONE_ID</span><span class="o">=</span><span class="s1">'abcde'</span>
+</pre></table></code></div></div><p>The source your shell</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="nb">source</span> ~/.zshrc
+</pre></table></code></div></div><p>Now let’s export Cloudflare state</p><p>(Be sure you have copied your variables into your shell, or ran the export commands above )</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>cf-terraforming generate <span class="se">\</span>
+  <span class="nt">--resource-type</span> <span class="s2">"cloudflare_record"</span> <span class="se">\</span>
+  <span class="nt">--zone</span> <span class="nv">$CLOUDFLARE_ZONE_ID</span> <span class="o">&gt;</span> imported.tf
+</pre></table></code></div></div><p>Look at the file and copy the contents into your <code class="language-plaintext highlighter-rouge">cloudflare.tf</code></p><p>then run</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>terraform plan
+</pre></table></code></div></div><p>Terraform thinks that we need to apply all of these resources, even though they exist.</p><p>We need to import them into our local state.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>cf-terraforming import <span class="se">\</span>
+  <span class="nt">--resource-type</span> <span class="s2">"cloudflare_record"</span> <span class="se">\</span>
+  <span class="nt">--zone</span> <span class="nv">$CLOUDFLARE_ZONE_ID</span>
+</pre></table></code></div></div><p>This will export a lot of commands, we now need to run them to import them into our state.</p><p>All you need to do it copy and paste the commands into your terminal.</p><p>This will import your local state, you can see it in <code class="language-plaintext highlighter-rouge">terraform.tfstate</code></p><p>If we run <code class="language-plaintext highlighter-rouge">terraform plan</code> now, we can see that there aren’t any changes.</p><h2 id="remote-state-with-terraform-cloud"><span class="me-2">Remote State with Terraform Cloud</span><a href="#remote-state-with-terraform-cloud" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p><a href="https://app.terraform.io/">Terraform Cloud</a></p><p>Be sure to sign up for an account and then get add your <code class="language-plaintext highlighter-rouge">CLOUDFLARE_API_TOKEN</code> and an ENV variable in Terraform Cloud.Mark it as seneitive.</p><p>Then you’ll want to updated your <code class="language-plaintext highlighter-rouge">cloudflare.tf</code></p><p>It should look like this</p><div class="language-hcl highlighter-rouge"><div class="code-header"> <span data-label-text="Hcl"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre>  <span class="nx">cloud</span> <span class="p">{</span>
+    <span class="nx">hostname</span> <span class="o">=</span> <span class="s2">"app.terraform.io"</span>
+    <span class="nx">organization</span> <span class="o">=</span> <span class="s2">"your org"</span>
+
+    <span class="nx">workspaces</span> <span class="p">{</span>
+      <span class="nx">name</span> <span class="o">=</span> <span class="s2">"Cloudflare"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</pre></table></code></div></div><p>Your <code class="language-plaintext highlighter-rouge">cloudflare.tf</code> file should now look like:</p><div file="cloudflare.tf" class="language-hcl highlighter-rouge"><div class="code-header"> <span data-label-text="cloudflare.tf"><i class="far fa-file-code fa-fw"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre><td class="rouge-code"><pre><span class="nx">terraform</span> <span class="p">{</span>
+  <span class="nx">cloud</span> <span class="p">{</span>
+    <span class="nx">hostname</span> <span class="o">=</span> <span class="s2">"app.terraform.io"</span>
+    <span class="nx">organization</span> <span class="o">=</span> <span class="s2">"your org"</span>
+
+    <span class="nx">workspaces</span> <span class="p">{</span>
+      <span class="nx">name</span> <span class="o">=</span> <span class="s2">"Cloudflare"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="nx">required_providers</span> <span class="p">{</span>
+    <span class="nx">cloudflare</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nx">source</span>  <span class="o">=</span> <span class="s2">"cloudflare/cloudflare"</span>
+      <span class="nx">version</span> <span class="o">=</span> <span class="s2">"~&gt; 3.0"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">provider</span> <span class="s2">"cloudflare"</span> <span class="p">{</span>
+  <span class="nx">api_token</span> <span class="o">=</span> <span class="nx">var</span><span class="p">.</span><span class="nx">cloudflare_api_token</span>
+<span class="p">}</span>
+
+<span class="c1"># Create a record</span>
+<span class="nx">resource</span> <span class="s2">"cloudflare_record"</span> <span class="s2">"www"</span> <span class="p">{</span>
+  <span class="c1"># ...</span>
+<span class="p">}</span>
+
+<span class="c1"># Create a page rule</span>
+<span class="nx">resource</span> <span class="s2">"cloudflare_page_rule"</span> <span class="s2">"www"</span> <span class="p">{</span>
+  <span class="c1"># ...</span>
+<span class="p">}</span>
+</pre></table></code></div></div><p>Then run</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>terraform init
+</pre></table></code></div></div><p>This will prompt you to sign in and then import your local state into Terraform cloud.</p><h2 id="ci--cd-with-github-actions"><span class="me-2">CI / CD with GitHub Actions</span><a href="#ci--cd-with-github-actions" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>If you want to create a CI / CD pipeline with GitHub actions, you’ll need to create a new repo at <a href="https://github.com/">GitHub</a></p><p>Here is my <code class="language-plaintext highlighter-rouge">.gitignore</code></p><pre file=".gitignore"><code class="language-gitignore">.terraform/
+terraform.tfstate*
+</code></pre><p>Convert your local folder into a git repo:</p><p>first, <code class="language-plaintext highlighter-rouge">cd</code> into your folder</p><blockquote class="prompt-danger"><p><em>Note: Be sure not to commit any of your secrets to git! This includes API tokens, terraform state, and any other files that might include sensitive information</em></p></blockquote><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre>git init
+git commit <span class="nt">-m</span> <span class="s2">"first commit"</span>
+git branch <span class="nt">-M</span> main
+git remote add origin git@github.com:username/your-repo-name.git
+git push <span class="nt">-u</span> origin main
+</pre></table></code></div></div><p>To create a branch, add files, commit, and push</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre>git checkout <span class="nt">-b</span> my-new-branch
+git add <span class="nb">.</span>
+git commit <span class="nt">-m</span> <span class="s2">"fix(terraform): made some changes"</span>
+git push <span class="nt">--set-upstream</span> origin my-new-branch
+</pre></table></code></div></div><p>Be sure you have created a secret <code class="language-plaintext highlighter-rouge">TF_API_TOKEN</code> with your Terraform API token.</p><p>For reference, here is the terraform GitHub Action (with my bug fix)</p><div file=".github/workflows/terraform.yml" class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text=".github/workflows/terraform.yml"><i class="far fa-file-code fa-fw"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+</pre><td class="rouge-code"><pre><span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Terraform'</span>
+
+<span class="na">on</span><span class="pi">:</span>
+  <span class="na">push</span><span class="pi">:</span>
+    <span class="na">branches</span><span class="pi">:</span> <span class="pi">[</span> <span class="s2">"</span><span class="s">main"</span> <span class="pi">]</span>
+  <span class="na">pull_request</span><span class="pi">:</span>
+
+<span class="na">permissions</span><span class="pi">:</span>
+  <span class="na">contents</span><span class="pi">:</span> <span class="s">read</span>
+
+<span class="na">jobs</span><span class="pi">:</span>
+  <span class="na">terraform</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Terraform'</span>
+    <span class="na">runs-on</span><span class="pi">:</span> <span class="s">ubuntu-latest</span>
+    <span class="na">environment</span><span class="pi">:</span> <span class="s">production</span>
+
+    <span class="c1"># Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest</span>
+    <span class="na">defaults</span><span class="pi">:</span>
+      <span class="na">run</span><span class="pi">:</span>
+        <span class="na">shell</span><span class="pi">:</span> <span class="s">bash</span>
+
+    <span class="na">steps</span><span class="pi">:</span>
+    <span class="c1"># Checkout the repository to the GitHub Actions runner</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Checkout</span>
+      <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/checkout@v3</span>
+
+    <span class="c1"># Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Setup Terraform</span>
+      <span class="na">uses</span><span class="pi">:</span> <span class="s">hashicorp/setup-terraform@v2</span>
+      <span class="na">with</span><span class="pi">:</span>
+        <span class="na">cli_config_credentials_token</span><span class="pi">:</span> <span class="s">$</span>
+
+    <span class="c1"># Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Terraform Init</span>
+      <span class="na">run</span><span class="pi">:</span> <span class="s">terraform init</span>
+
+    <span class="c1"># Checks that all Terraform configuration files adhere to a canonical format</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Terraform Format</span>
+      <span class="na">run</span><span class="pi">:</span> <span class="s">terraform fmt -check</span>
+
+    <span class="c1"># Generates an execution plan for Terraform</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Terraform Plan</span>
+      <span class="na">run</span><span class="pi">:</span> <span class="s">terraform plan -input=false</span>
+
+      <span class="c1"># On push to "main", build or change infrastructure according to Terraform configuration files</span>
+      <span class="c1"># Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Terraform Apply</span>
+      <span class="na">if</span><span class="pi">:</span> <span class="s">github.ref == 'refs/heads/main' &amp;&amp; github.event_name == 'push'</span>
+      <span class="na">run</span><span class="pi">:</span> <span class="s">terraform apply -auto-approve -input=false</span>
+</pre></table></code></div></div><h2 id="wrapping-up"><span class="me-2">Wrapping up</span><a href="#wrapping-up" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>At this point you should be able to run terraform and have your Cloudflare state sync’d with Terraform Cloud and GitHub actions running in CI / CD so you can start deploying your infrastructure using code!</p><h2 id="join-the-conversation"><span class="me-2">Join the conversation</span><a href="#join-the-conversation" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><blockquote class="twitter-tweet" data-dnt="true" data-theme="dark"><p lang="en" dir="ltr">Over the past few weeks I learned all about Terraform and it&#39;s awesome! I converted my Cloudflare settings to code and deploy it with CI / CD using GitHub Actions!<br /><br />You can check it out here:<br /><br />👉 <a href="https://t.co/vUnvV8m3Mh">https://t.co/vUnvV8m3Mh</a><a href="https://twitter.com/hashtag/terraform?src=hash&amp;ref_src=twsrc%5Etfw">#terraform</a> <a href="https://twitter.com/hashtag/cloudflare?src=hash&amp;ref_src=twsrc%5Etfw">#cloudflare</a> <a href="https://twitter.com/hashtag/github?src=hash&amp;ref_src=twsrc%5Etfw">#github</a> <a href="https://twitter.com/hashtag/homelab?src=hash&amp;ref_src=twsrc%5Etfw">#homelab</a> <a href="https://t.co/2oWkhtZshu">pic.twitter.com/2oWkhtZshu</a></p>&mdash; Techno Tim (@TechnoTimLive) <a href="https://twitter.com/TechnoTimLive/status/1639660262818021376?ref_src=twsrc%5Etfw">March 25, 2023</a></blockquote><script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script><h2 id="links"><span class="me-2">Links</span><a href="#links" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>🛍️ Check out the new Merch Shop at <a href="https://l.technotim.com/shop">https://l.technotim.com/shop</a></p><p>⚙️ See all the hardware I recommend at <a href="https://l.technotim.com/gear">https://l.technotim.com/gear</a></p><p>🚀 Don’t forget to check out the <a href="https://l.technotim.com/quick-start">🚀Launchpad repo</a> with all of the quick start source files</p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw me-1"></i> <a href="/categories/cloud/">cloud</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw me-1"></i> <a href="/tags/terraform/" class="post-tag no-text-decoration" >terraform</a> <a href="/tags/hashicorp/" class="post-tag no-text-decoration" >hashicorp</a> <a href="/tags/cloudflare/" class="post-tag no-text-decoration" >cloudflare</a> <a href="/tags/github/" class="post-tag no-text-decoration" >github</a> <a href="/tags/cloud/" class="post-tag no-text-decoration" >cloud</a> <a href="/tags/homelab/" class="post-tag no-text-decoration" >homelab</a></div><div class=" post-tail-bottom d-flex justify-content-between align-items-center mt-5 pb-2 " ><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper d-flex align-items-center"> <span class="share-label text-muted">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Automate%20Cloudflare%20with%20Terraform%20and%20GitHub%20Actions!%20-%20Terraform%20Tutorial%20for%20Beginners%20-%20Techno%20Tim&url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fterraform-cloudflare-github%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter"> <i class="fa-fw fa-brands fa-square-x-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Automate%20Cloudflare%20with%20Terraform%20and%20GitHub%20Actions!%20-%20Terraform%20Tutorial%20for%20Beginners%20-%20Techno%20Tim&u=https%3A%2F%2Ftechnotim.com%2Fposts%2Fterraform-cloudflare-github%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fterraform-cloudflare-github%2F&text=Automate%20Cloudflare%20with%20Terraform%20and%20GitHub%20Actions!%20-%20Terraform%20Tutorial%20for%20Beginners%20-%20Techno%20Tim" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fterraform-cloudflare-github%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Linkedin" aria-label="Linkedin"> <i class="fa-fw fab fa-linkedin"></i> </a> <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/share-to-mastodon/+esm"></script> <button class="btn text-start" data-bs-toggle="tooltip" data-bs-placement="top" title="Mastodon" aria-label="Mastodon"> <share-to-mastodon class="share-mastodon" message="Automate%20Cloudflare%20with%20Terraform%20and%20GitHub%20Actions!%20-%20Terraform%20Tutorial%20for%20Beginners%20-%20Techno%20Tim" url="https%3A%2F%2Ftechnotim.com%2Fposts%2Fterraform-cloudflare-github%2F"customInstanceList="[{&quot;label&quot;:&quot;mastodon.social&quot;,&quot;link&quot;:&quot;https://mastodon.social/&quot;},{&quot;label&quot;:&quot;mastodon.online&quot;,&quot;link&quot;:&quot;https://mastodon.online/&quot;},{&quot;label&quot;:&quot;fosstodon.org&quot;,&quot;link&quot;:&quot;https://fosstodon.org/&quot;},{&quot;label&quot;:&quot;photog.social&quot;,&quot;link&quot;:&quot;https://photog.social/&quot;}]" > <i class="fa-fw fa-brands fa-mastodon"></i> </share-to-mastodon> </button> <button id="copy-link" aria-label="Copy link" class="btn small" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy link" data-title-succeed="Link copied successfully!" > <i class="fa-fw fas fa-link pe-none fs-6"></i> </button> </span></div></div></div></article></main><aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 text-muted"><div class="access"><section id="access-lastmod"><h2 class="panel-heading">Recently Updated</h2><ul class="content list-unstyled ps-0 pb-1 ms-1 mt-2"><li class="text-truncate lh-lg"> <a href="/posts/homelab-hardware-tour-2026/">My 2026 Homelab Tour (Rack + Servers + Network + Storage)</a><li class="text-truncate lh-lg"> <a href="/posts/beelink-me-pro/">Beelink ME Pro: Tiny NAS, Stacked Hardware</a><li class="text-truncate lh-lg"> <a href="/posts/paperless-ngx-local-ai/">Self-Hosted Paperless-ngx + Optional Local AI: Private Documents and Improves OCR & Search (Full Setup)</a><li class="text-truncate lh-lg"> <a href="/posts/homelab-services-tour-2022/">Techno Tim HomeLab Services Tour (Late 2022) - What am I Self-Hosting in my HomeLab?</a><li class="text-truncate lh-lg"> <a href="/posts/truenas-zfs-expand/">The EASIEST way to Expand Your ZFS Pool in TrueNAS (But is it the Best?)</a></ul></section><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div class="toc-border-cover z-3"></div><section id="toc-wrapper" class="invisible position-sticky ps-0 pe-4 pb-4"><h2 class="panel-heading ps-3 pb-2 mb-0">Contents</h2><nav id="toc"></nav></section></aside></div><div class="row"><div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4"><aside id="related-posts" aria-labelledby="related-label"><h3 class="mb-4" id="related-label">Further Reading</h3><nav class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4"><article class="col"> <a href="/posts/first-11-things-proxmox/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1606572000" data-df="ll" > Nov 28, 2020 </time><h4 class="pt-0 my-2">Before I do anything on Proxmox, I do this first...</h4><div class="text-muted"><p>After setting up my Proxmox servers, there are a few things I do before I use them for their intended purpose.This ranges from updates, to storage, to networking and VLANS, to uploading ISOs, to cl...</p></div></div></a></article><article class="col"> <a href="/posts/metal-as-a-service-packer/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1674914400" data-df="ll" > Jan 28, 2023 </time><h4 class="pt-0 my-2">Deploying Machines with MaaS and Packer - Metal as a Service + Hashicorp Packer Tutorial</h4><div class="text-muted"><p>MaaS or Metal as a service from Canonical is a great way to provision bare metal machines as well as virtual machines.MaaS allows you to deploy Windows, Linux, ESXi, and many other operating system...</p></div></div></a></article><article class="col"> <a href="/posts/host-rancher-securely/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1599314400" data-df="ll" > Sep 5, 2020 </time><h4 class="pt-0 my-2">SSL, Traefik, and OAuth for Rancher! (Google, GitHub, Keycloak, Azure, and more!)</h4><div class="text-muted"><p>Do you want to self host your Rancher UI securely in your homelab? Have you thought about putting your Rancher UI behind Traefik and your reverse proxy to get free SSL certificates using Let’s Encr...</p></div></div></a></article></nav></aside><nav class="post-navigation d-flex justify-content-between" aria-label="Post Navigation"> <a href="/posts/rotate-sops-encryption-keys/" class="btn btn-outline-primary" aria-label="Older" ><p>Rotating your Encryption Keys and Updating your Secrets with SOPS</p></a> <a href="/posts/low-power-efficient-server/" class="btn btn-outline-primary" aria-label="Newer" ><p>Building a Low Power, All-in-One, Silent Server</p></a></nav><footer aria-label="Site Info" class=" d-flex flex-column justify-content-center text-muted flex-lg-row justify-content-lg-between align-items-lg-center pb-lg-3 " ><p>© <time>2026</time> <a href="https://l.technotim.com/twitter">Techno Tim</a>. <span data-bs-toggle="tooltip" data-bs-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author." >Some rights reserved.</span></p><p><a href="/sponsor/">🤝 Help keep this ad-free!</href> &nbsp; &nbsp;<a href="https://l.technotim.com/shop">🛍️ Check out the new merch shop!</href></p></footer></div></div><div id="search-result-wrapper" class="d-flex justify-content-center d-none"><div class="col-11 content"><div id="search-hints"><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><aside aria-label="Scroll to Top"> <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow"> <i class="fas fa-angle-up"></i> </button></aside></div><div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div><script> document.addEventListener('DOMContentLoaded', () => { SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<article class="px-1 px-sm-2 px-lg-4 px-xl-0"><header><h2><a href="{url}">{title}</a></h2><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div></header><p>{content}</p></article>', noResultsText: '<p class="mt-5">Oops! No results found.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="me-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); }); </script>

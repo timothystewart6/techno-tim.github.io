@@ -1,0 +1,771 @@
+<!doctype html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width, user-scalable=no initial-scale=1, shrink-to-fit=no, viewport-fit=cover" ><meta name="generator" content="Jekyll v4.4.1" /><meta property="og:title" content="Advanced Kubernetes Networking with Multus (It’s easier than you think)" /><meta property="og:locale" content="en" /><meta name="description" content="I just discovered Multus and it fixed Kubernetes networking! In this video we cover a lot of Kubernetes networking topics from beginner topics like CNIs, to advanced topics like adding Multus for more traditional networking within Kubernetes - which fixes a lot of problems you see with Kubernetes networking. Also, I had to turn the nerd up to 11 on this one." /><meta property="og:description" content="I just discovered Multus and it fixed Kubernetes networking! In this video we cover a lot of Kubernetes networking topics from beginner topics like CNIs, to advanced topics like adding Multus for more traditional networking within Kubernetes - which fixes a lot of problems you see with Kubernetes networking. Also, I had to turn the nerd up to 11 on this one." /><link rel="canonical" href="https://technotim.com/posts/advanced-kubernetes-networking/" /><meta property="og:url" content="https://technotim.com/posts/advanced-kubernetes-networking/" /><meta property="og:site_name" content="Techno Tim" /><meta property="og:image" content="https://images.technotim.com/assets/img/headers/advanced-kubernetes-networking-hero.webp" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2024-04-14T08:00:00-05:00" /><meta name="twitter:card" content="summary_large_image" /><meta property="twitter:image" content="https://images.technotim.com/assets/img/headers/advanced-kubernetes-networking-hero.webp" /><meta property="twitter:title" content="Advanced Kubernetes Networking with Multus (It’s easier than you think)" /><meta name="twitter:site" content="@technotimlive" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-01-07T14:03:20-06:00","datePublished":"2024-04-14T08:00:00-05:00","description":"I just discovered Multus and it fixed Kubernetes networking! In this video we cover a lot of Kubernetes networking topics from beginner topics like CNIs, to advanced topics like adding Multus for more traditional networking within Kubernetes - which fixes a lot of problems you see with Kubernetes networking. Also, I had to turn the nerd up to 11 on this one.","headline":"Advanced Kubernetes Networking with Multus (It’s easier than you think)","image":{"lqip":"ddata:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAYACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP1/uPh1dah4cXzLy38+e8iuDcw3OpWtzHvjbakDxvLbRKheMp5llcBQJQwkd4poPDjQ/du8nU55SnLnk7cs425Yxs1Hl6Je69eZcz51hzwVF1JKdT2tOLjFuKjzSSteLjJqDho4KT97VOzaPG3/AGXtevXa8Xx9rUC3bNcrCviLWysKzkyiJT5IysYfYD6Cslgo2X7mjsvtf/cTnhS54QmsNg7TjGSvGztJJq69k7PXa7t3e5//2Q==","url":"https://images.technotim.com/assets/img/headers/advanced-kubernetes-networking-hero.webp","@type":"imageObject"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://technotim.com/posts/advanced-kubernetes-networking/"},"url":"https://technotim.com/posts/advanced-kubernetes-networking/"}</script><title>Advanced Kubernetes Networking with Multus (It's easier than you think) | Techno Tim</title><link rel="icon" type="image/png" href="/assets/img/favicons/favicon-96x96.png" sizes="96x96"><link rel="icon" type="image/svg+xml" href="/assets/img/favicons/favicon.svg"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="/assets/css/jekyll-theme-chirpy.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4.36.4/dist/tocbot.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css"> <script src="/assets/js/dist/theme.min.js"></script> <script defer src="https://cdn.jsdelivr.net/combine/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js,npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.umd.min.js,npm/glightbox@3.3.0/dist/js/glightbox.min.js,npm/clipboard@2.0.11/dist/clipboard.min.js,npm/dayjs@1.11.18/dayjs.min.js,npm/dayjs@1.11.18/locale/en.js,npm/dayjs@1.11.18/plugin/relativeTime.js,npm/dayjs@1.11.18/plugin/localizedFormat.js,npm/tocbot@4.36.4/dist/tocbot.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=G-NZ5V7DM8F5"></script> <script> document.addEventListener('DOMContentLoaded', () => { window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-NZ5V7DM8F5'); }); </script><body><aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end"><header class="profile-wrapper"> <a href="/" id="avatar" class="rounded-circle"><img src="https://avatars.githubusercontent.com/u/1322205?s=400&u=5b4f2219006577dc0426007fe5a02391c4899677&v=4" width="112" height="112" alt="avatar" onerror="this.style.display='none'"></a> <a class="site-title d-block" href="/">Techno Tim</a><p class="site-subtitle fst-italic mb-0">Engineer. Builder. Creator. | From Code to Cloud</p></header><nav class="flex-column flex-grow-1 w-100 ps-0"><ul class="nav"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle"></i> <span>ABOUT</span> </a><li class="nav-item"> <a href="/shop/" class="nav-link"> <i class="fa-fw fas fa-bag-shopping"></i> <span>MERCH</span> </a><li class="nav-item"> <a href="/sponsor/" class="nav-link"> <i class="fa-fw fas fa-handshake"></i> <span>SPONSOR</span> </a></ul></nav><div class="sidebar-bottom d-flex flex-wrap align-items-center w-100"> <button type="button" class="btn btn-link nav-link" aria-label="Switch Mode" id="mode-toggle"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://l.technotim.com/links" aria-label="links" target="_blank" rel="noopener noreferrer" > <i class="fa-solid fa-link"></i> </a> <a href="https://twitter.com/technotimlive" aria-label="twitter" target="_blank" rel="noopener noreferrer" > <i class="fa-brands fa-x-twitter"></i> </a> <a href="https://l.technotim.com/github" aria-label="github-custom" target="_blank" rel="noopener noreferrer" > <i class="fab fa-github"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></aside><div id="main-wrapper" class="d-flex justify-content-center"><div class="container d-flex flex-column px-xxl-5"><header id="topbar-wrapper" class="flex-shrink-0" aria-label="Top Bar"><div id="topbar" class="d-flex align-items-center justify-content-between px-lg-3 h-100" ><nav id="breadcrumb" aria-label="Breadcrumb"> <span> <a href="/">Home</a> </span> <span>Advanced Kubernetes Networking with Multus (It's easier than you think)</span></nav><button type="button" id="sidebar-trigger" class="btn btn-link" aria-label="Sidebar"> <i class="fas fa-bars fa-fw"></i> </button><div id="topbar-title"> Post</div><button type="button" id="search-trigger" class="btn btn-link" aria-label="Search"> <i class="fas fa-search fa-fw"></i> </button> <search id="search" class="align-items-center ms-3 ms-lg-0"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..." > </search> <button type="button" class="btn btn-link text-decoration-none" id="search-cancel">Cancel</button></div></header><div class="row flex-grow-1"><main aria-label="Main Content" class="col-12 col-lg-11 col-xl-9 px-md-4"><article class="px-1" data-toc="true"><header><h1 data-toc-skip>Advanced Kubernetes Networking with Multus (It's easier than you think)</h1><div class="post-meta text-muted"> <span> Posted <time data-ts="1713099600" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Apr 14, 2024 </time> </span> <span> Updated <time data-ts="1767816200" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Jan 7, 2026 </time> </span><div class="mt-3 mb-3"> <a href="https://images.technotim.com/assets/img/headers/advanced-kubernetes-networking-hero.webp" class="popup img-link preview-img blur"><img data-src="https://images.technotim.com/assets/img/headers/advanced-kubernetes-networking-hero.webp" alt="Preview Image" width="1200" height="630" data-lqip="true" src="ddata:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAYACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP1/uPh1dah4cXzLy38+e8iuDcw3OpWtzHvjbakDxvLbRKheMp5llcBQJQwkd4poPDjQ/du8nU55SnLnk7cs425Yxs1Hl6Je69eZcz51hzwVF1JKdT2tOLjFuKjzSSteLjJqDho4KT97VOzaPG3/AGXtevXa8Xx9rUC3bNcrCviLWysKzkyiJT5IysYfYD6Cslgo2X7mjsvtf/cTnhS54QmsNg7TjGSvGztJJq69k7PXa7t3e5//2Q=="></a></div><div class="d-flex justify-content-between"> <span> By <em> <a href="https://l.technotim.com/twitter">Techno Tim</a> </em> </span><div> <span class="readtime" data-bs-toggle="tooltip" data-bs-placement="bottom" title="2296 words" > <em>12 min</em> read</span></div></div></div></header><div id="toc-bar" class="d-flex align-items-center justify-content-between invisible"> <span class="label text-truncate">Advanced Kubernetes Networking with Multus (It's easier than you think)</span> <button type="button" class="toc-trigger btn me-1"> <i class="fa-solid fa-list-ul fa-fw"></i> </button></div><button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-outline-secondary btn-sm"> <span class="label ps-2 pe-1">Contents</span> <i class="fa-solid fa-angle-right fa-fw"></i> </button> <dialog id="toc-popup" class="p-0"><div class="header d-flex flex-row align-items-center justify-content-between"><div class="label text-truncate py-2 ms-4">Advanced Kubernetes Networking with Multus (It's easier than you think)</div><button id="toc-popup-close" type="button" class="btn mx-1 my-1 opacity-75"> <i class="fas fa-close"></i> </button></div><div id="toc-popup-content" class="px-4 py-3 pb-4"></div></dialog><div class="content"><p>I just discovered Multus and it fixed Kubernetes networking! In this video we cover a lot of Kubernetes networking topics from beginner topics like CNIs, to advanced topics like adding Multus for more traditional networking within Kubernetes - which fixes a lot of problems you see with Kubernetes networking. Also, I had to turn the nerd up to 11 on this one.</p><iframe class="embed-video" loading="lazy" src="https://www.youtube.com/embed/atfLTiW5yvM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe><p>📺 <a href="https://www.youtube.com/watch?v=atfLTiW5yvM">Watch Video</a></p><ul><li>Be sure to check out and ⭐ the <a href="https://github.com/k8snetworkplumbingwg/multus-cni">Multus repo on GitHub</a>!<li>Network diagram created with Excalidraw <a href="https://github.com/excalidraw/excalidraw">https://github.com/excalidraw/excalidraw</a><li>Much of the documentation and diagrams we walked through can be found on <a href="https://devopstales.github.io/kubernetes/multus/">DevOpsTales</a><li>Huge thanks to the folks over in the <a href="https://discord.com/servers/home-operations-673534664354430999">Home Operations Discord</a> too!<li>Huge thanks to <a href="https://twitter.com/clemenko">Andy (@clemenko)</a> for helping me troubleshoot and diagnose issues with Multus/RKE2/Cilium</ul><p>Disclosures:</p><ul><li>Nothing in this video was sponsored</ul><h2 id="installing-multus"><span class="me-2">Installing Multus</span><a href="#installing-multus" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Multus can be installed a few different ways. The best thing to do is check with your Kubernetes distribution if they support enabling this with configuration. If they do, this is much easier than installing it yourself</p><ul><li><a href="https://docs.k3s.io/networking/multus-ipams">Installing Multus with K3s</a><li><a href="https://docs.rke2.io/install/network_options">Installing Multus on RKE2</a><li><a href="https://github.com/k8snetworkplumbingwg/multus-cni/blob/master/docs/quickstart.md#installation">Installing Multus without your distribution’s help</a></ul><p>Be sure to apply any additional config mentioned in the above links. This will most likely include configuration for your CNI to allow multus to plug into it.</p><p>Since I was using RKE2, I needed to apply this <code class="language-plaintext highlighter-rouge">HelmChartConfig</code> to configure Cilium to work with Multus</p><p>Do not apply this unless you are also using Cilium and RKE2/</p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="c1"># /var/lib/rancher/rke2/server/manifests/rke2-cilium-config.yaml</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">helm.cattle.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">HelmChartConfig</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">rke2-cilium</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">kube-system</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">valuesContent</span><span class="pi">:</span> <span class="pi">|-</span>
+    <span class="s">cni:</span>
+      <span class="s">exclusive: false</span>
+</pre></table></code></div></div><h2 id="configuring-multus"><span class="me-2">Configuring Multus</span><a href="#configuring-multus" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>First check to see that it’s installed</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>kubectl get pods <span class="nt">--all-namespaces</span> | <span class="nb">grep</span> <span class="nt">-i</span> multus
+</pre></table></code></div></div><p>You should see something similar to the output below. This will vary depending on how you installed multus.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre>kube-system           rke2-multus-4kbbv                                       1/1     Running     0              30h
+kube-system           rke2-multus-qbhrb                                       1/1     Running     0              30h
+kube-system           rke2-multus-rmh9l                                       1/1     Running     0              30h
+kube-system           rke2-multus-vbpr5                                       1/1     Running     0              30h
+kube-system           rke2-multus-x4bpg                                       1/1     Running     0              30h
+kube-system           rke2-multus-z22sq                                       1/1     Running     0              30h
+</pre></table></code></div></div><p>We will need to create a <code class="language-plaintext highlighter-rouge">NetworkAttachmentDefinition</code></p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre><td class="rouge-code"><pre><span class="c1"># network-attachment-definition.yaml</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s2">"</span><span class="s">k8s.cni.cncf.io/v1"</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">NetworkAttachmentDefinition</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">multus-iot</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">config</span><span class="pi">:</span> <span class="pi">|-</span>
+    <span class="s">{</span>
+      <span class="s">"cniVersion": "0.3.1",</span>
+      <span class="s">"type": "ipvlan",</span>
+      <span class="s">"master": "eth1",</span>
+      <span class="s">"ipam": {</span>
+        <span class="s">"type": "static",</span>
+        <span class="s">"routes": [</span>
+          <span class="s">{ "dst": "192.168.0.0/16", "gw": "192.168.20.1" }</span>
+        <span class="s">]</span>
+      <span class="s">}</span>
+    <span class="s">}</span>
+</pre></table></code></div></div><p>Then apply this <code class="language-plaintext highlighter-rouge">NetworkAttachmentDefinition</code></p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>kubectl apply <span class="nt">-f</span> network-attachment-definition.yaml
+</pre></table></code></div></div><p>Then check to see if it was created</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>kubectl get network-attachment-definitions.k8s.cni.cncf.io multus-iot
+</pre></table></code></div></div><p>Should see something like:</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>NAME         AGE
+multus-iot   30h
+</pre></table></code></div></div><p>You can also describe it to see it contents</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>kubectl describe network-attachment-definitions.k8s.cni.cncf.io multus-iot
+</pre></table></code></div></div><p>You should see something like:</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre><td class="rouge-code"><pre>Name:         multus-iot
+Namespace:    default
+Labels:       &lt;none&gt;
+Annotations:  &lt;none&gt;
+API Version:  k8s.cni.cncf.io/v1
+Kind:         NetworkAttachmentDefinition
+Metadata:
+  Creation Timestamp:  2024-04-14T04:56:02Z
+  Generation:          1
+  Resource Version:    3215172
+  UID:                 89b7f3d0-c094-4831-9b94-5ecdf6b38232
+Spec:
+  Config:  <span class="o">{</span>
+  <span class="s2">"cniVersion"</span>: <span class="s2">"0.3.1"</span>,
+  <span class="s2">"type"</span>: <span class="s2">"ipvlan"</span>,
+  <span class="s2">"master"</span>: <span class="s2">"eth1"</span>,
+  <span class="s2">"ipam"</span>: <span class="o">{</span>
+    <span class="s2">"type"</span>: <span class="s2">"static"</span>,
+    <span class="s2">"routes"</span>: <span class="o">[</span>
+      <span class="o">{</span> <span class="s2">"dst"</span>: <span class="s2">"192.168.0.0/16"</span>, <span class="s2">"gw"</span>: <span class="s2">"192.168.20.1"</span> <span class="o">}</span>
+    <span class="o">]</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+Events:  &lt;none&gt;
+</pre></table></code></div></div><h2 id="creating-a-sample-workload"><span class="me-2">Creating a Sample Workload</span><a href="#creating-a-sample-workload" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Let’s create a sample pod and see if it gets our IP</p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre><td class="rouge-code"><pre><span class="c1"># sample-pod.yaml</span>
+
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">sample-pod</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="na">k8s.v1.cni.cncf.io/networks</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">[{</span>
+        <span class="s">"name": "multus-iot",</span>
+        <span class="s">"namespace": "default",</span>
+        <span class="s">"mac": "c6:5e:a4:8e:7a:59",</span>
+        <span class="s">"ips": ["192.168.20.202/24"]</span>
+      <span class="s">}]</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">containers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">sample-pod</span>
+    <span class="na">command</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">/bin/ash"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-c"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">trap</span><span class="nv"> </span><span class="s">:</span><span class="nv"> </span><span class="s">TERM</span><span class="nv"> </span><span class="s">INT;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">infinity</span><span class="nv"> </span><span class="s">&amp;</span><span class="nv"> </span><span class="s">wait"</span><span class="pi">]</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">alpine</span>
+</pre></table></code></div></div><p>Check to see if it’s running</p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="s">kubectl get pod sample-pod</span>
+</pre></table></code></div></div><p>You should see something like:</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>NAME         READY   STATUS    RESTARTS   AGE
+sample-pod   1/1     Running   0          30h
+</pre></table></code></div></div><p>Now let’s describe the pod to see if it got our IP</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>kubectl describe pod sample-pod
+</pre></table></code></div></div><p>You should see something like:</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+</pre><td class="rouge-code"><pre>➜  home-ops git:<span class="o">(</span>master<span class="o">)</span> k describe pod sample-pod
+Name:             sample-pod
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             k8s-home-worker-01/192.168.20.70
+Start Time:       Sun, 14 Apr 2024 00:01:28 <span class="nt">-0500</span>
+Labels:           &lt;none&gt;
+Annotations:      k8s.v1.cni.cncf.io/network-status:
+                    <span class="o">[{</span>
+                        <span class="s2">"name"</span>: <span class="s2">"portmap"</span>,
+                        <span class="s2">"interface"</span>: <span class="s2">"eth0"</span>,
+                        <span class="s2">"ips"</span>: <span class="o">[</span>
+                            <span class="s2">"10.42.4.89"</span>
+                        <span class="o">]</span>,
+                        <span class="s2">"mac"</span>: <span class="s2">"1a:af:f2:3f:32:f8"</span>,
+                        <span class="s2">"default"</span>: <span class="nb">true</span>,
+                        <span class="s2">"dns"</span>: <span class="o">{}</span>,
+                        <span class="s2">"gateway"</span>: <span class="o">[</span>
+                            <span class="s2">"10.42.4.163"</span>
+                        <span class="o">]</span>
+                    <span class="o">}</span>,<span class="o">{</span>
+                        <span class="s2">"name"</span>: <span class="s2">"default/multus-iot"</span>,
+                        <span class="s2">"interface"</span>: <span class="s2">"net1"</span>,
+                        <span class="s2">"ips"</span>: <span class="o">[</span>
+                            <span class="s2">"192.168.20.202"</span>
+                        <span class="o">]</span>,
+                        <span class="s2">"mac"</span>: <span class="s2">"bc:24:11:a0:4b:35"</span>,
+                        <span class="s2">"dns"</span>: <span class="o">{}</span>
+                    <span class="o">}]</span>
+                  k8s.v1.cni.cncf.io/networks:
+                    <span class="o">[{</span>
+                      <span class="s2">"name"</span>: <span class="s2">"multus-iot"</span>,
+                      <span class="s2">"namespace"</span>: <span class="s2">"default"</span>,
+                      <span class="s2">"mac"</span>: <span class="s2">"c6:5e:a4:8e:7a:59"</span>,
+                      <span class="s2">"ips"</span>: <span class="o">[</span><span class="s2">"192.168.20.202/24"</span><span class="o">]</span>
+                    <span class="o">}]</span>
+Status:           Running
+IP:               10.42.4.89
+IPs:
+  IP:  10.42.4.89
+Containers:
+  sample-pod:
+    Container ID:  containerd://fdd56e2fcdb3d587d792878285ef0fe50d076167d2b283dbf42aeb1b210d36cf
+    Image:         alpine
+    Image ID:      docker.io/library/alpine@sha256:c5b1261d6d3e43071626931fc004f70149baeba2c8ec672bd4f27761f8e1ad6b
+    Port:          &lt;none&gt;
+    Host Port:     &lt;none&gt;
+    Command:
+      /bin/ash
+      <span class="nt">-c</span>
+      <span class="nb">trap</span> : TERM INT<span class="p">;</span> <span class="nb">sleep </span>infinity &amp; <span class="nb">wait
+    </span>State:          Running
+      Started:      Sun, 14 Apr 2024 00:01:29 <span class="nt">-0500</span>
+    Ready:          True
+    Restart Count:  0
+    Environment:    &lt;none&gt;
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-lggfv <span class="o">(</span>ro<span class="o">)</span>
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  kube-api-access-lggfv:
+    Type:                    Projected <span class="o">(</span>a volume that contains injected data from multiple sources<span class="o">)</span>
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       &lt;nil&gt;
+    DownwardAPI:             <span class="nb">true
+</span>QoS Class:                   BestEffort
+Node-Selectors:              &lt;none&gt;
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute <span class="nv">op</span><span class="o">=</span>Exists <span class="k">for </span>300s
+                             node.kubernetes.io/unreachable:NoExecute <span class="nv">op</span><span class="o">=</span>Exists <span class="k">for </span>300s
+Events:
+  Type    Reason          Age   From               Message
+  <span class="nt">----</span>    <span class="nt">------</span>          <span class="nt">----</span>  <span class="nt">----</span>               <span class="nt">-------</span>
+  Normal  Scheduled       8s    default-scheduler  Successfully assigned default/sample-pod to k8s-home-worker-01
+  Normal  AddedInterface  7s    multus             Add eth0 <span class="o">[</span>10.42.4.89/32] from portmap
+  Normal  AddedInterface  7s    multus             Add net1 <span class="o">[</span>192.168.20.202/24] from default/multus-iot
+  Normal  Pulling         7s    kubelet            Pulling image <span class="s2">"alpine"</span>
+  Normal  Pulled          7s    kubelet            Successfully pulled image <span class="s2">"alpine"</span> <span class="k">in </span>388.090289ms <span class="o">(</span>388.099785ms including waiting<span class="o">)</span>
+  Normal  Created         7s    kubelet            Created container sample-pod
+  Normal  Started         7s    kubelet            Started container sample-pod
+</pre></table></code></div></div><p>You should see an adapter added to the pod as well as an IP:</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre>...
+Normal  AddedInterface  7s    multus             Add net1 <span class="o">[</span>192.168.20.202/24] from default/multus-iot
+...
+</pre></table></code></div></div><h3 id="testing-the-workload"><span class="me-2">Testing the Workload</span><a href="#testing-the-workload" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>Be sure you can ping that new IP</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre>➜  home-ops git:<span class="o">(</span>master<span class="o">)</span> ping 192.168.20.202
+PING 192.168.20.202 <span class="o">(</span>192.168.20.202<span class="o">)</span>: 56 data bytes
+64 bytes from 192.168.20.202: <span class="nv">icmp_seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>63 <span class="nb">time</span><span class="o">=</span>0.839 ms
+64 bytes from 192.168.20.202: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>63 <span class="nb">time</span><span class="o">=</span>0.876 ms
+64 bytes from 192.168.20.202: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>63 <span class="nb">time</span><span class="o">=</span>0.991 ms
+64 bytes from 192.168.20.202: <span class="nv">icmp_seq</span><span class="o">=</span>3 <span class="nv">ttl</span><span class="o">=</span>63 <span class="nb">time</span><span class="o">=</span>0.812 ms
+</pre></table></code></div></div><p><code class="language-plaintext highlighter-rouge">exec</code> into the pod and test connectivity and DNS</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>kubectl <span class="nb">exec</span> <span class="nt">-it</span> pods/sample-pod <span class="nt">--</span> /bin/sh
+</pre></table></code></div></div><p>Once in ping your gateway, ping another device on the network, and ping something on the internet</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre><td class="rouge-code"><pre>/ <span class="c"># ping 192.168.20.1</span>
+PING 192.168.20.1 <span class="o">(</span>192.168.20.1<span class="o">)</span>: 56 data bytes
+64 bytes from 192.168.20.1: <span class="nb">seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.318 ms
+64 bytes from 192.168.20.1: <span class="nb">seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.230 ms
+64 bytes from 192.168.20.1: <span class="nb">seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.531 ms
+^C
+<span class="nt">---</span> 192.168.20.1 ping statistics <span class="nt">---</span>
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max <span class="o">=</span> 0.230/0.359/0.531 ms
+/ <span class="c"># ping 192.168.20.52</span>
+PING 192.168.20.52 <span class="o">(</span>192.168.20.52<span class="o">)</span>: 56 data bytes
+64 bytes from 192.168.20.52: <span class="nb">seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>255 <span class="nb">time</span><span class="o">=</span>88.498 ms
+64 bytes from 192.168.20.52: <span class="nb">seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>255 <span class="nb">time</span><span class="o">=</span>3.375 ms
+64 bytes from 192.168.20.52: <span class="nb">seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>255 <span class="nb">time</span><span class="o">=</span>25.688 ms
+^C
+<span class="nt">---</span> 192.168.20.52 ping statistics <span class="nt">---</span>
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max <span class="o">=</span> 3.375/39.187/88.498 ms
+/ <span class="c"># ping google.com</span>
+PING google.com <span class="o">(</span>142.250.191.238<span class="o">)</span>: 56 data bytes
+64 bytes from 142.250.191.238: <span class="nb">seq</span><span class="o">=</span>0 <span class="nv">ttl</span><span class="o">=</span>111 <span class="nb">time</span><span class="o">=</span>8.229 ms
+64 bytes from 142.250.191.238: <span class="nb">seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>111 <span class="nb">time</span><span class="o">=</span>8.578 ms
+64 bytes from 142.250.191.238: <span class="nb">seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>111 <span class="nb">time</span><span class="o">=</span>8.579 ms
+^C
+<span class="nt">---</span> google.com ping statistics <span class="nt">---</span>
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max <span class="o">=</span> 8.229/8.462/8.579 ms
+/ <span class="c">#</span>
+</pre></table></code></div></div><p>Now test DNS by looking up something on the internet, something on your local network, and something inside of your cluster</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+</pre><td class="rouge-code"><pre>/ <span class="c"># nslookup google.com</span>
+Server:  10.43.0.10
+Address: 10.43.0.10:53
+
+Non-authoritative answer:
+Name: google.com
+Address: 142.250.191.238
+
+Non-authoritative answer:
+Name: google.com
+Address: 2607:f8b0:4009:81b::200e
+
+/ <span class="c"># nslookup k8s-home-worker-01.local.techtronic.us</span>
+Server:  10.43.0.10
+Address: 10.43.0.10:53
+
+Name: k8s-home-worker-01.local.techtronic.us
+Address: 192.168.60.53
+
+Non-authoritative answer:
+
+/ <span class="c"># nslookup homepage</span>
+Server:  10.43.0.10
+Address: 10.43.0.10:53
+
+<span class="k">**</span> server can<span class="s1">'t find homepage.cluster.local: NXDOMAIN
+
+** server can'</span>t find homepage.svc.cluster.local: NXDOMAIN
+
+<span class="k">**</span> server can<span class="s1">'t find homepage.cluster.local: NXDOMAIN
+
+** server can'</span>t find homepage.svc.cluster.local: NXDOMAIN
+
+
+Name: homepage.default.svc.cluster.local
+Address: 10.43.143.7
+</pre></table></code></div></div><p>If all of the tests passed, you should be good!</p><p>You can now do the same thing for your other workloads that need to use Multus!</p><h2 id="gotchas"><span class="me-2">Gotchas</span><a href="#gotchas" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><h3 id="rke2"><span class="me-2">RKE2</span><a href="#rke2" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>If you’re using RKE2 and you notice that your worker nodes are using the wrong IP address after adding an additional NIC, you can override the Node IP with config:</p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="c1"># /etc/rancher/rke2/config.yaml</span>
+<span class="na">node-ip</span><span class="pi">:</span> <span class="s">192.168.60.53</span> <span class="c1"># the node's primary IP used for kubernetes</span>
+<span class="na">node-external-ip</span><span class="pi">:</span> <span class="s">192.168.60.53</span> <span class="c1"># the node's primary IP used for kubernetes</span>
+</pre></table></code></div></div><p>You will need to restart the rke service or reboot.</p><p>Check with</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>kubectl get nodes <span class="nt">-o</span> wide
+</pre></table></code></div></div><p>You should then see the IP on the node (note my <code class="language-plaintext highlighter-rouge">k8s-home-worker-01</code> has the fix, but <code class="language-plaintext highlighter-rouge">k8s-home-worker-02</code> and <code class="language-plaintext highlighter-rouge">k8s-home-worker-03</code> don’t)</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre>NAME                 STATUS   ROLES                       AGE   VERSION          INTERNAL-IP     EXTERNAL-IP     OS-IMAGE             KERNEL-VERSION       CONTAINER-RUNTIME
+k8s-home-01          Ready    control-plane,etcd,master   5d    v1.28.8+rke2r1   192.168.60.50   &lt;none&gt;          Ubuntu 22.04.4 LTS   5.15.0-102-generic   containerd://1.7.11-k3s2
+k8s-home-02          Ready    control-plane,etcd,master   5d    v1.28.8+rke2r1   192.168.60.51   &lt;none&gt;          Ubuntu 22.04.4 LTS   5.15.0-102-generic   containerd://1.7.11-k3s2
+k8s-home-03          Ready    control-plane,etcd,master   5d    v1.28.8+rke2r1   192.168.60.52   &lt;none&gt;          Ubuntu 22.04.4 LTS   5.15.0-102-generic   containerd://1.7.11-k3s2
+k8s-home-worker-01   Ready    worker                      5d    v1.28.8+rke2r1   192.168.60.53   192.168.60.53   Ubuntu 22.04.4 LTS   5.15.0-102-generic   containerd://1.7.11-k3s2
+k8s-home-worker-02   Ready    worker                      5d    v1.28.8+rke2r1   192.168.20.71   &lt;none&gt;          Ubuntu 22.04.4 LTS   5.15.0-102-generic   containerd://1.7.11-k3s2
+k8s-home-worker-03   Ready    worker                      5d    v1.28.8+rke2r1   192.168.20.72   &lt;none&gt;          Ubuntu 22.04.4 LTS   5.15.0-102-generic   containerd://1.7.11-k3s2
+</pre></table></code></div></div><p>You can see more flags on the <a href="https://docs.rke2.io/reference/linux_agent_config">RKE2 documentation page</a></p><h3 id="cloud-init-and-routing"><span class="me-2">cloud-init and routing</span><a href="#cloud-init-and-routing" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>I have also seen odd issues when with routing and using cloud init. I’ve had to override some settings using <code class="language-plaintext highlighter-rouge">netplan</code></p><p>You can see there is a misplaced route in your tables</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre>➜  ~ ip route
+192.168.20.0/24 dev eth1 proto kernel scope <span class="nb">link </span>src 192.168.20.72 metric 100
+192.168.20.1 dev eth1 proto dhcp scope <span class="nb">link </span>src 192.168.20.72 metric 100
+192.168.60.0/24 dev eth0 proto kernel scope <span class="nb">link </span>src 192.168.60.55 metric 100
+192.168.60.1 dev eth0 proto dhcp scope <span class="nb">link </span>src 192.168.60.55 metric 100
+192.168.60.10 via 192.168.20.1 dev eth1 proto dhcp src 192.168.20.72 metric 100 <span class="c"># wrong</span>
+192.168.60.10 dev eth0 proto dhcp scope <span class="nb">link </span>src 192.168.60.55 metric 100
+192.168.60.22 via 192.168.20.1 dev eth1 proto dhcp src 192.168.20.72 metric 100 <span class="c">#wrong</span>
+192.168.60.22 dev eth0 proto dhcp scope <span class="nb">link </span>src 192.168.60.55 metric 100
+</pre></table></code></div></div><p>To fix this, we need to override the routes with <code class="language-plaintext highlighter-rouge">netplan</code></p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="nb">sudo </span>nano /etc/netplan/50-cloud-init.yaml
+</pre></table></code></div></div><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+</pre><td class="rouge-code"><pre><span class="c1"># This file is generated from information provided by the datasource.  Changes</span>
+<span class="c1"># to it will not persist across an instance reboot.  To disable cloud-init's</span>
+<span class="c1"># network configuration capabilities, write a file</span>
+<span class="c1"># /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg with the following:</span>
+<span class="c1"># network: {config: disabled}</span>
+<span class="na">network</span><span class="pi">:</span>
+    <span class="na">version</span><span class="pi">:</span> <span class="m">2</span>
+    <span class="na">ethernets</span><span class="pi">:</span>
+        <span class="na">eth0</span><span class="pi">:</span>
+            <span class="na">addresses</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">192.168.60.55/24</span>
+            <span class="na">match</span><span class="pi">:</span>
+                <span class="na">macaddress</span><span class="pi">:</span> <span class="s">bc:24:11:f1:2a:e7</span>
+            <span class="na">nameservers</span><span class="pi">:</span>
+                <span class="na">addresses</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="s">192.168.60.10</span>
+                <span class="pi">-</span> <span class="s">192.168.60.22</span>
+            <span class="na">routes</span><span class="pi">:</span>
+            <span class="pi">-</span>   <span class="na">to</span><span class="pi">:</span> <span class="s">default</span>
+                <span class="na">via</span><span class="pi">:</span> <span class="s">192.168.60.1</span>
+            <span class="na">set-name</span><span class="pi">:</span> <span class="s">eth0</span>
+        <span class="na">eth1</span><span class="pi">:</span>
+            <span class="na">addresses</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">192.168.20.65/24</span>
+            <span class="na">match</span><span class="pi">:</span>
+                <span class="na">macaddress</span><span class="pi">:</span> <span class="s">bc:29:71:9a:01:29</span>
+            <span class="na">nameservers</span><span class="pi">:</span>
+                <span class="na">addresses</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="s">192.168.60.10</span>
+                <span class="pi">-</span> <span class="s">192.168.60.22</span>
+            <span class="na">routes</span><span class="pi">:</span>
+            <span class="pi">-</span>   <span class="na">to</span><span class="pi">:</span> <span class="s">192.168.20.0/24</span>
+                <span class="na">via</span><span class="pi">:</span> <span class="s">192.168.20.1</span>
+            <span class="na">set-name</span><span class="pi">:</span> <span class="s">eth1</span>
+        <span class="na">eth2</span><span class="pi">:</span>
+            <span class="na">addresses</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">192.168.40.52/24</span>
+            <span class="na">match</span><span class="pi">:</span>
+                <span class="na">macaddress</span><span class="pi">:</span> <span class="s">bc:24:11:3d:c9:f7</span>
+            <span class="na">nameservers</span><span class="pi">:</span>
+                <span class="na">addresses</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="s">192.168.60.10</span>
+                <span class="pi">-</span> <span class="s">192.168.60.22</span>
+            <span class="na">routes</span><span class="pi">:</span>
+            <span class="pi">-</span>   <span class="na">to</span><span class="pi">:</span> <span class="s">192.168.40.0/24</span>
+                <span class="na">via</span><span class="pi">:</span> <span class="s">192.168.40.1</span>
+            <span class="na">set-name</span><span class="pi">:</span> <span class="s">eth2</span>
+</pre></table></code></div></div><p>If you know of a better way to do this, please let me know in the comments.</p><h3 id="k3s"><span class="me-2">k3s</span><a href="#k3s" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>You will have to make some changes for this to work with <code class="language-plaintext highlighter-rouge">k3s</code>. Thanks <a href="https://github.com/ChrisThePCGeek">ThePCGeek</a>!</p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre><td class="rouge-code"><pre> <span class="c1"># k3s multus install</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">helm.cattle.io/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">HelmChart</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">multus</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">kube-system</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">repo</span><span class="pi">:</span> <span class="s">https://rke2-charts.rancher.io</span>
+  <span class="na">chart</span><span class="pi">:</span> <span class="s">rke2-multus</span>
+  <span class="na">targetNamespace</span><span class="pi">:</span> <span class="s">kube-system</span>
+  <span class="c1"># createNamespace: true</span>
+  <span class="na">valuesContent</span><span class="pi">:</span> <span class="pi">|-</span>
+    <span class="s">config:</span>
+      <span class="s">cni_conf:</span>
+        <span class="s">confDir: /var/lib/rancher/k3s/agent/etc/cni/net.d</span>
+        <span class="s">clusterNetwork: /var/lib/rancher/k3s/agent/etc/cni/net.d/10-flannel.conflist</span>
+        <span class="s">binDir: /var/lib/rancher/k3s/data/current/bin/</span>
+        <span class="s">kubeconfig: /var/lib/rancher/k3s/agent/etc/cni/net.d/multus.d/multus.kubeconfig</span>
+</pre></table></code></div></div><h3 id="mac-vlan"><span class="me-2">mac-vlan</span><a href="#mac-vlan" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h3><p>I have also used this <code class="language-plaintext highlighter-rouge">mac-vlan</code> config below successfully</p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+</pre><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s2">"</span><span class="s">k8s.cni.cncf.io/v1"</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">NetworkAttachmentDefinition</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">multus-iot</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">config</span><span class="pi">:</span> <span class="pi">|-</span>
+    <span class="s">{</span>
+      <span class="s">"cniVersion": "0.3.1",</span>
+      <span class="s">"name": "multus-iot",</span>
+      <span class="s">"plugins": [</span>
+        <span class="s">{</span>
+          <span class="s">"type": "macvlan",</span>
+          <span class="s">"master": "eth1",</span>
+          <span class="s">"mode": "bridge",</span>
+          <span class="s">"capabilities": {</span>
+            <span class="s">"ips": true</span>
+          <span class="s">},</span>
+          <span class="s">"ipam": {</span>
+            <span class="s">"type": "static",</span>
+            <span class="s">"routes": [{</span>
+              <span class="s">"dst": "192.168.0.0/16",</span>
+              <span class="s">"gw": "192.168.20.1"</span>
+            <span class="s">}]</span>
+          <span class="s">}</span>
+        <span class="s">}</span>
+      <span class="s">]</span>
+    <span class="s">}</span>
+</pre></table></code></div></div><p>Sample Pods</p><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre><td class="rouge-code"><pre><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">sample-pod</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="na">k8s.v1.cni.cncf.io/networks</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">[{</span>
+        <span class="s">"name": "multus-iot",</span>
+        <span class="s">"namespace": "default",</span>
+        <span class="s">"mac": "c6:5e:a4:8e:7a:59",</span>
+        <span class="s">"ips": ["192.168.20.210/24"],</span>
+        <span class="s">"gateway": [ "192.168.20.1" ]</span>
+      <span class="s">}]</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">containers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">sample-pod</span>
+    <span class="na">command</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">/bin/ash"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-c"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">trap</span><span class="nv"> </span><span class="s">:</span><span class="nv"> </span><span class="s">TERM</span><span class="nv"> </span><span class="s">INT;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">infinity</span><span class="nv"> </span><span class="s">&amp;</span><span class="nv"> </span><span class="s">wait"</span><span class="pi">]</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">alpine</span>
+</pre></table></code></div></div><h2 id="join-the-conversation"><span class="me-2">Join the conversation</span><a href="#join-the-conversation" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><blockquote class="twitter-tweet" data-dnt="true" data-theme="dark"><p lang="en" dir="ltr">Today I released 40 minute, super niche technical video on advanced Kubernetes networking with Multus. <br /><br />I didn&#39;t do it for the algorithm, I did it because I loved every minute of it. (Well, after I got it working)<a href="https://t.co/O7sLjDIMXt">https://t.co/O7sLjDIMXt</a> <a href="https://t.co/bBnBbmlsDx">pic.twitter.com/bBnBbmlsDx</a></p>&mdash; Techno Tim (@TechnoTimLive) <a href="https://twitter.com/TechnoTimLive/status/1779516238533627905?ref_src=twsrc%5Etfw">April 14, 2024</a></blockquote><script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script><h2 id="links"><span class="me-2">Links</span><a href="#links" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>🛍️ Check out the new Merch Shop at <a href="https://l.technotim.com/shop">https://l.technotim.com/shop</a></p><p>⚙️ See all the hardware I recommend at <a href="https://l.technotim.com/gear">https://l.technotim.com/gear</a></p><p>🚀 Don’t forget to check out the <a href="https://l.technotim.com/quick-start">🚀Launchpad repo</a> with all of the quick start source files</p><p>🤝 Support me and <a href="/sponsor">help keep this site ad-free!</a></p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw me-1"></i> <a href="/categories/homelab/">homelab</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw me-1"></i> <a href="/tags/multus/" class="post-tag no-text-decoration" >multus</a> <a href="/tags/kubernetes/" class="post-tag no-text-decoration" >kubernetes</a> <a href="/tags/networking/" class="post-tag no-text-decoration" >networking</a> <a href="/tags/rke2/" class="post-tag no-text-decoration" >rke2</a> <a href="/tags/k3s/" class="post-tag no-text-decoration" >k3s</a> <a href="/tags/cni/" class="post-tag no-text-decoration" >cni</a> <a href="/tags/cilium/" class="post-tag no-text-decoration" >cilium</a></div><div class=" post-tail-bottom d-flex justify-content-between align-items-center mt-5 pb-2 " ><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper d-flex align-items-center"> <span class="share-label text-muted">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Advanced%20Kubernetes%20Networking%20with%20Multus%20(It's%20easier%20than%20you%20think)%20-%20Techno%20Tim&url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fadvanced-kubernetes-networking%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter"> <i class="fa-fw fa-brands fa-square-x-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Advanced%20Kubernetes%20Networking%20with%20Multus%20(It's%20easier%20than%20you%20think)%20-%20Techno%20Tim&u=https%3A%2F%2Ftechnotim.com%2Fposts%2Fadvanced-kubernetes-networking%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fadvanced-kubernetes-networking%2F&text=Advanced%20Kubernetes%20Networking%20with%20Multus%20(It's%20easier%20than%20you%20think)%20-%20Techno%20Tim" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fadvanced-kubernetes-networking%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Linkedin" aria-label="Linkedin"> <i class="fa-fw fab fa-linkedin"></i> </a> <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/share-to-mastodon/+esm"></script> <button class="btn text-start" data-bs-toggle="tooltip" data-bs-placement="top" title="Mastodon" aria-label="Mastodon"> <share-to-mastodon class="share-mastodon" message="Advanced%20Kubernetes%20Networking%20with%20Multus%20(It's%20easier%20than%20you%20think)%20-%20Techno%20Tim" url="https%3A%2F%2Ftechnotim.com%2Fposts%2Fadvanced-kubernetes-networking%2F"customInstanceList="[{&quot;label&quot;:&quot;mastodon.social&quot;,&quot;link&quot;:&quot;https://mastodon.social/&quot;},{&quot;label&quot;:&quot;mastodon.online&quot;,&quot;link&quot;:&quot;https://mastodon.online/&quot;},{&quot;label&quot;:&quot;fosstodon.org&quot;,&quot;link&quot;:&quot;https://fosstodon.org/&quot;},{&quot;label&quot;:&quot;photog.social&quot;,&quot;link&quot;:&quot;https://photog.social/&quot;}]" > <i class="fa-fw fa-brands fa-mastodon"></i> </share-to-mastodon> </button> <button id="copy-link" aria-label="Copy link" class="btn small" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy link" data-title-succeed="Link copied successfully!" > <i class="fa-fw fas fa-link pe-none fs-6"></i> </button> </span></div></div></div></article></main><aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 text-muted"><div class="access"><section id="access-lastmod"><h2 class="panel-heading">Recently Updated</h2><ul class="content list-unstyled ps-0 pb-1 ms-1 mt-2"><li class="text-truncate lh-lg"> <a href="/posts/homelab-hardware-tour-2026/">My 2026 Homelab Tour (Rack + Servers + Network + Storage)</a><li class="text-truncate lh-lg"> <a href="/posts/beelink-me-pro/">Beelink ME Pro: Tiny NAS, Stacked Hardware</a><li class="text-truncate lh-lg"> <a href="/posts/paperless-ngx-local-ai/">Self-Hosted Paperless-ngx + Optional Local AI: Private Documents and Improves OCR & Search (Full Setup)</a><li class="text-truncate lh-lg"> <a href="/posts/homelab-services-tour-2022/">Techno Tim HomeLab Services Tour (Late 2022) - What am I Self-Hosting in my HomeLab?</a><li class="text-truncate lh-lg"> <a href="/posts/truenas-zfs-expand/">The EASIEST way to Expand Your ZFS Pool in TrueNAS (But is it the Best?)</a></ul></section><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div class="toc-border-cover z-3"></div><section id="toc-wrapper" class="invisible position-sticky ps-0 pe-4 pb-4"><h2 class="panel-heading ps-3 pb-2 mb-0">Contents</h2><nav id="toc"></nav></section></aside></div><div class="row"><div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4"><aside id="related-posts" aria-labelledby="related-label"><h3 class="mb-4" id="related-label">Further Reading</h3><nav class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4"><article class="col"> <a href="/posts/kube-traefik-cert-manager-le/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1659794400" data-df="ll" > Aug 6, 2022 </time><h4 class="pt-0 my-2">Wildcard Certificates with Traefik + cert-manager + Let's Encrypt in Kubernetes Tutorial</h4><div class="text-muted"><p>Traefik, cert-manager, Cloudflare, and Let’s Encrypt are a winning combination when it comes to securing your services with certificates in Kubernetes.Today, we’ll install and configure Traefik, th...</p></div></div></a></article><article class="col"> <a href="/posts/kube-grafana-prometheus/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1658588400" data-df="ll" > Jul 23, 2022 </time><h4 class="pt-0 my-2">Beautiful Dashboards with Grafana and Prometheus - Monitoring Kubernetes Tutorial</h4><div class="text-muted"><p>Grafana and Prometheus are a powerful monitoring solution.It allows you to visualize, query, and alert metrics no matter where they are stored.Today, we’ll install and configure Prometheus and Graf...</p></div></div></a></article><article class="col"> <a href="/posts/meet-harvester/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1647090000" data-df="ll" > Mar 12, 2022 </time><h4 class="pt-0 my-2">A Hypervisor Built on Kubernetes - Cloud Native HCI with Harvester</h4><div class="text-muted"><p>Rancher released a next generation open source HCI software hypervisor built on Kubernetes that helps you run virtual machines.With Harvester you can create Linux, Windows, or any virtual machine t...</p></div></div></a></article></nav></aside><nav class="post-navigation d-flex justify-content-between" aria-label="Post Navigation"> <a href="/posts/homelab-colo-architecture-review/" class="btn btn-outline-primary" aria-label="Older" ><p>YOU Review MY HomeLab and Colocation Architecture!</p></a> <a href="/posts/udm-pro-max/" class="btn btn-outline-primary" aria-label="Newer" ><p>FINALLY! A New UniFi Dream Machine!</p></a></nav><footer aria-label="Site Info" class=" d-flex flex-column justify-content-center text-muted flex-lg-row justify-content-lg-between align-items-lg-center pb-lg-3 " ><p>© <time>2026</time> <a href="https://l.technotim.com/twitter">Techno Tim</a>. <span data-bs-toggle="tooltip" data-bs-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author." >Some rights reserved.</span></p><p><a href="/sponsor/">🤝 Help keep this ad-free!</href> &nbsp; &nbsp;<a href="https://l.technotim.com/shop">🛍️ Check out the new merch shop!</href></p></footer></div></div><div id="search-result-wrapper" class="d-flex justify-content-center d-none"><div class="col-11 content"><div id="search-hints"><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><aside aria-label="Scroll to Top"> <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow"> <i class="fas fa-angle-up"></i> </button></aside></div><div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div><script> document.addEventListener('DOMContentLoaded', () => { SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<article class="px-1 px-sm-2 px-lg-4 px-xl-0"><header><h2><a href="{url}">{title}</a></h2><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div></header><p>{content}</p></article>', noResultsText: '<p class="mt-5">Oops! No results found.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="me-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); }); </script>

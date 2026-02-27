@@ -1,0 +1,379 @@
+<!doctype html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="viewport" content="width=device-width, user-scalable=no initial-scale=1, shrink-to-fit=no, viewport-fit=cover" ><meta name="generator" content="Jekyll v4.4.1" /><meta property="og:title" content="Open Source &amp; Collaborative Security with CrowdSec and Traefik - CrowdSec &amp; Traefik Tutorial" /><meta property="og:locale" content="en" /><meta name="description" content="CrowdSec is a free, open-source and collaborative IPS. Analyze behaviors, respond to attacks &amp; share signals across the community.With CrowdSec, you can set up your own intrusion detection system that parses logs, detects and blocks threats, and shares bad actors with the larger CrowdSec community.It works great with a reverse proxy like traefik to help keep hackers at bay.Could this be a viable alternative to fail2ban?" /><meta property="og:description" content="CrowdSec is a free, open-source and collaborative IPS. Analyze behaviors, respond to attacks &amp; share signals across the community.With CrowdSec, you can set up your own intrusion detection system that parses logs, detects and blocks threats, and shares bad actors with the larger CrowdSec community.It works great with a reverse proxy like traefik to help keep hackers at bay.Could this be a viable alternative to fail2ban?" /><link rel="canonical" href="https://technotim.com/posts/crowdsec-traefik/" /><meta property="og:url" content="https://technotim.com/posts/crowdsec-traefik/" /><meta property="og:site_name" content="Techno Tim" /><meta property="og:image" content="https://images.technotim.com/assets/img/headers/crowd-concert.webp" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2022-02-12T07:00:00-06:00" /><meta name="twitter:card" content="summary_large_image" /><meta property="twitter:image" content="https://images.technotim.com/assets/img/headers/crowd-concert.webp" /><meta property="twitter:title" content="Open Source &amp; Collaborative Security with CrowdSec and Traefik - CrowdSec &amp; Traefik Tutorial" /><meta name="twitter:site" content="@technotimlive" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-01-07T14:03:20-06:00","datePublished":"2022-02-12T07:00:00-06:00","description":"CrowdSec is a free, open-source and collaborative IPS. Analyze behaviors, respond to attacks &amp; share signals across the community.With CrowdSec, you can set up your own intrusion detection system that parses logs, detects and blocks threats, and shares bad actors with the larger CrowdSec community.It works great with a reverse proxy like traefik to help keep hackers at bay.Could this be a viable alternative to fail2ban?","headline":"Open Source &amp; Collaborative Security with CrowdSec and Traefik - CrowdSec &amp; Traefik Tutorial","image":{"lqip":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAUACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP5mvh98X/gXpvwruPBHin9na88SeIb6LXZJvGenfFT/AIR1obt4LdvD89nokvw+11UTR2kuxereapf3OrQzRQw3mkrDIbn8J4s4b8U8dxIswyHxTwGQZDTxGAqR4cqcCxzSNSjCpVWNp4nMnxTgK1WtiVyRw9eGHorCQU4zo4tyjKn+l5JjuEKWWLD5hwjVzDGyo1YzzFZ7LC1VUai6c6NFZXWhTpwi/epSlU56i5/aRj+7PjuRrRpJGSzVEZ2ZEM0jFFLEqpbC7iowN21c4zgdK/ZYOrGEYyq80oxipSScVJpJNqPO+VN68t3ba7PhJQouUnGm4pybScrtJvRN8qu0tL2V97I//9k=","url":"https://images.technotim.com/assets/img/headers/crowd-concert.webp","@type":"imageObject"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://technotim.com/posts/crowdsec-traefik/"},"url":"https://technotim.com/posts/crowdsec-traefik/"}</script><title>Open Source & Collaborative Security with CrowdSec and Traefik - CrowdSec & Traefik Tutorial | Techno Tim</title><link rel="icon" type="image/png" href="/assets/img/favicons/favicon-96x96.png" sizes="96x96"><link rel="icon" type="image/svg+xml" href="/assets/img/favicons/favicon.svg"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="/assets/css/jekyll-theme-chirpy.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4.36.4/dist/tocbot.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css"> <script src="/assets/js/dist/theme.min.js"></script> <script defer src="https://cdn.jsdelivr.net/combine/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js,npm/loading-attribute-polyfill@2.1.1/dist/loading-attribute-polyfill.umd.min.js,npm/glightbox@3.3.0/dist/js/glightbox.min.js,npm/clipboard@2.0.11/dist/clipboard.min.js,npm/dayjs@1.11.18/dayjs.min.js,npm/dayjs@1.11.18/locale/en.js,npm/dayjs@1.11.18/plugin/relativeTime.js,npm/dayjs@1.11.18/plugin/localizedFormat.js,npm/tocbot@4.36.4/dist/tocbot.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=G-NZ5V7DM8F5"></script> <script> document.addEventListener('DOMContentLoaded', () => { window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-NZ5V7DM8F5'); }); </script><body><aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end"><header class="profile-wrapper"> <a href="/" id="avatar" class="rounded-circle"><img src="https://avatars.githubusercontent.com/u/1322205?s=400&u=5b4f2219006577dc0426007fe5a02391c4899677&v=4" width="112" height="112" alt="avatar" onerror="this.style.display='none'"></a> <a class="site-title d-block" href="/">Techno Tim</a><p class="site-subtitle fst-italic mb-0">Engineer. Builder. Creator. | From Code to Cloud</p></header><nav class="flex-column flex-grow-1 w-100 ps-0"><ul class="nav"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle"></i> <span>ABOUT</span> </a><li class="nav-item"> <a href="/shop/" class="nav-link"> <i class="fa-fw fas fa-bag-shopping"></i> <span>MERCH</span> </a><li class="nav-item"> <a href="/sponsor/" class="nav-link"> <i class="fa-fw fas fa-handshake"></i> <span>SPONSOR</span> </a></ul></nav><div class="sidebar-bottom d-flex flex-wrap align-items-center w-100"> <button type="button" class="btn btn-link nav-link" aria-label="Switch Mode" id="mode-toggle"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://l.technotim.com/links" aria-label="links" target="_blank" rel="noopener noreferrer" > <i class="fa-solid fa-link"></i> </a> <a href="https://twitter.com/technotimlive" aria-label="twitter" target="_blank" rel="noopener noreferrer" > <i class="fa-brands fa-x-twitter"></i> </a> <a href="https://l.technotim.com/github" aria-label="github-custom" target="_blank" rel="noopener noreferrer" > <i class="fab fa-github"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></aside><div id="main-wrapper" class="d-flex justify-content-center"><div class="container d-flex flex-column px-xxl-5"><header id="topbar-wrapper" class="flex-shrink-0" aria-label="Top Bar"><div id="topbar" class="d-flex align-items-center justify-content-between px-lg-3 h-100" ><nav id="breadcrumb" aria-label="Breadcrumb"> <span> <a href="/">Home</a> </span> <span>Open Source & Collaborative Security with CrowdSec and Traefik - CrowdSec & Traefik Tutorial</span></nav><button type="button" id="sidebar-trigger" class="btn btn-link" aria-label="Sidebar"> <i class="fas fa-bars fa-fw"></i> </button><div id="topbar-title"> Post</div><button type="button" id="search-trigger" class="btn btn-link" aria-label="Search"> <i class="fas fa-search fa-fw"></i> </button> <search id="search" class="align-items-center ms-3 ms-lg-0"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..." > </search> <button type="button" class="btn btn-link text-decoration-none" id="search-cancel">Cancel</button></div></header><div class="row flex-grow-1"><main aria-label="Main Content" class="col-12 col-lg-11 col-xl-9 px-md-4"><article class="px-1" data-toc="true"><header><h1 data-toc-skip>Open Source & Collaborative Security with CrowdSec and Traefik - CrowdSec & Traefik Tutorial</h1><div class="post-meta text-muted"> <span> Posted <time data-ts="1644670800" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Feb 12, 2022 </time> </span> <span> Updated <time data-ts="1767816200" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Jan 7, 2026 </time> </span><div class="mt-3 mb-3"> <a href="https://images.technotim.com/assets/img/headers/crowd-concert.webp" class="popup img-link preview-img blur"><img data-src="https://images.technotim.com/assets/img/headers/crowd-concert.webp" alt="Preview Image" width="1200" height="630" data-lqip="true" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAUACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP5mvh98X/gXpvwruPBHin9na88SeIb6LXZJvGenfFT/AIR1obt4LdvD89nokvw+11UTR2kuxereapf3OrQzRQw3mkrDIbn8J4s4b8U8dxIswyHxTwGQZDTxGAqR4cqcCxzSNSjCpVWNp4nMnxTgK1WtiVyRw9eGHorCQU4zo4tyjKn+l5JjuEKWWLD5hwjVzDGyo1YzzFZ7LC1VUai6c6NFZXWhTpwi/epSlU56i5/aRj+7PjuRrRpJGSzVEZ2ZEM0jFFLEqpbC7iowN21c4zgdK/ZYOrGEYyq80oxipSScVJpJNqPO+VN68t3ba7PhJQouUnGm4pybScrtJvRN8qu0tL2V97I//9k="></a></div><div class="d-flex justify-content-between"> <span> By <em> <a href="https://l.technotim.com/twitter">Techno Tim</a> </em> </span><div> <span class="readtime" data-bs-toggle="tooltip" data-bs-placement="bottom" title="848 words" > <em>4 min</em> read</span></div></div></div></header><div id="toc-bar" class="d-flex align-items-center justify-content-between invisible"> <span class="label text-truncate">Open Source & Collaborative Security with CrowdSec and Traefik - CrowdSec & Traefik Tutorial</span> <button type="button" class="toc-trigger btn me-1"> <i class="fa-solid fa-list-ul fa-fw"></i> </button></div><button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-outline-secondary btn-sm"> <span class="label ps-2 pe-1">Contents</span> <i class="fa-solid fa-angle-right fa-fw"></i> </button> <dialog id="toc-popup" class="p-0"><div class="header d-flex flex-row align-items-center justify-content-between"><div class="label text-truncate py-2 ms-4">Open Source & Collaborative Security with CrowdSec and Traefik - CrowdSec & Traefik Tutorial</div><button id="toc-popup-close" type="button" class="btn mx-1 my-1 opacity-75"> <i class="fas fa-close"></i> </button></div><div id="toc-popup-content" class="px-4 py-3 pb-4"></div></dialog><div class="content"><p><a href="https://crowdsec.net/">CrowdSec</a> is a free, open-source and collaborative IPS. Analyze behaviors, respond to attacks &amp; share signals across the community.With CrowdSec, you can set up your own intrusion detection system that parses logs, detects and blocks threats, and shares bad actors with the larger CrowdSec community.It works great with a reverse proxy like <a href="https://traefik.io/">traefik</a> to help keep hackers at bay.Could this be a viable alternative to fail2ban?</p><iframe class="embed-video" loading="lazy" src="https://www.youtube.com/embed/-GxUP6bNxF0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe><p>📺 <a href="https://www.youtube.com/watch?v=-GxUP6bNxF0">Watch Video</a></p><p>A HUGE THANK YOU to Micro Center for sponsoring this video!</p><p>New Customers Exclusive – Get a Free 240gb SSD at Micro Center: <a href="https://micro.center/1fbb85">https://micro.center/1fbb85</a></p><p>If you need to set up traefik, you can follow this post here on <a href="/posts/traefik-portainer-ssl/">configuring traefik</a></p><p>If you need a high level overview of HomeLab and Self-Hosting Security, check out <a href="https://www.youtube.com/watch?v=Cs8yOmTJNYQ">this video</a> that will help you keep your network safe.</p><h2 id="configure-crowdsec"><span class="me-2">Configure CrowdSec</span><a href="#configure-crowdsec" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>traefik bouncer repo <a href="https://github.com/fbonalair/traefik-crowdsec-bouncer">https://github.com/fbonalair/traefik-crowdsec-bouncer</a></p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="nb">mkdir </span>crowdsec
+<span class="nb">cd </span>crowdsec
+<span class="nb">touch </span>docker-compose.yml
+nano docker-compose.yml
+</pre></table></code></div></div><div class="language-yml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre><td class="rouge-code"><pre><span class="na">version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">3.8'</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">crowdsec</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">crowdsecurity/crowdsec:latest</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">crowdsec</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">GID</span><span class="pi">:</span> <span class="s2">"</span><span class="s">${GID-1000}"</span>
+      <span class="na">COLLECTIONS</span><span class="pi">:</span> <span class="s2">"</span><span class="s">crowdsecurity/linux</span><span class="nv"> </span><span class="s">crowdsecurity/traefik"</span>
+    <span class="c1"># depends_on:  #uncomment if running traefik in the same compose file</span>
+    <span class="c1">#   - 'traefik'</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./config/acquis.yaml:/etc/crowdsec/acquis.yaml</span>
+      <span class="pi">-</span> <span class="s">crowdsec-db:/var/lib/crowdsec/data/</span>
+      <span class="pi">-</span> <span class="s">crowdsec-config:/etc/crowdsec/</span>
+      <span class="pi">-</span> <span class="s">traefik_traefik-logs:/var/log/traefik/:ro</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">proxy</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+
+  <span class="na">bouncer-traefik</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">docker.io/fbonalair/traefik-crowdsec-bouncer:latest</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">bouncer-traefik</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">CROWDSEC_BOUNCER_API_KEY</span><span class="pi">:</span> <span class="s">some-api-key</span>
+      <span class="na">CROWDSEC_AGENT_HOST</span><span class="pi">:</span> <span class="s">crowdsec:8080</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">proxy</span> <span class="c1"># same network as traefik + crowdsec</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">crowdsec</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">proxy</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">crowdsec-db</span><span class="pi">:</span>
+  <span class="na">crowdsec-config</span><span class="pi">:</span>
+  <span class="na">traefik_traefik-logs</span><span class="pi">:</span> <span class="c1"># this will be the name of the volume from trarfic logs</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span> <span class="c1"># remove if traefik is running on same stack</span>
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="nb">cd </span>config
+<span class="nb">touch </span>acquis.yaml
+nano acquis.yaml
+docker-compose up <span class="nt">-d</span> <span class="nt">--force-recreate</span>
+</pre></table></code></div></div><div class="language-yml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="na">filenames</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">/var/log/traefik/*</span>
+<span class="na">labels</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">traefik</span>
+</pre></table></code></div></div><h2 id="configure-traefik"><span class="me-2">Configure Traefik</span><a href="#configure-traefik" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="nb">cd </span>traefik
+<span class="nb">cd </span>data
+nano traefik.yml
+</pre></table></code></div></div><div class="language-yml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+</pre><td class="rouge-code"><pre><span class="na">api</span><span class="pi">:</span>
+  <span class="na">dashboard</span><span class="pi">:</span> <span class="kc">true</span>
+  <span class="na">debug</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">entryPoints</span><span class="pi">:</span>
+  <span class="na">http</span><span class="pi">:</span>
+    <span class="na">address</span><span class="pi">:</span> <span class="s2">"</span><span class="s">:80"</span>
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">middlewares</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">crowdsec-bouncer@file</span>
+  <span class="na">https</span><span class="pi">:</span>
+    <span class="na">address</span><span class="pi">:</span> <span class="s2">"</span><span class="s">:443"</span>
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">middlewares</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">crowdsec-bouncer@file</span>
+<span class="na">serversTransport</span><span class="pi">:</span>
+  <span class="na">insecureSkipVerify</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">providers</span><span class="pi">:</span>
+  <span class="na">docker</span><span class="pi">:</span>
+    <span class="na">endpoint</span><span class="pi">:</span> <span class="s2">"</span><span class="s">unix:///var/run/docker.sock"</span>
+    <span class="na">exposedByDefault</span><span class="pi">:</span> <span class="kc">false</span>
+  <span class="na">file</span><span class="pi">:</span>
+    <span class="na">filename</span><span class="pi">:</span> <span class="s">/config.yml</span>
+<span class="na">certificatesResolvers</span><span class="pi">:</span>
+  <span class="na">cloudflare</span><span class="pi">:</span>
+    <span class="na">acme</span><span class="pi">:</span>
+      <span class="na">email</span><span class="pi">:</span> <span class="s">someone@example.com</span>
+      <span class="na">storage</span><span class="pi">:</span> <span class="s">acme.json</span>
+      <span class="na">dnsChallenge</span><span class="pi">:</span>
+        <span class="na">provider</span><span class="pi">:</span> <span class="s">cloudflare</span>
+        <span class="na">resolvers</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="s2">"</span><span class="s">1.1.1.1:53"</span>
+<span class="na">log</span><span class="pi">:</span>
+  <span class="na">level</span><span class="pi">:</span> <span class="s2">"</span><span class="s">INFO"</span>
+  <span class="na">filePath</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/var/log/traefik/traefik.log"</span>
+<span class="na">accessLog</span><span class="pi">:</span>
+  <span class="na">filePath</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/var/log/traefik/access.log"</span>
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>nano docker-compose.yml
+</pre></table></code></div></div><div class="language-yml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+</pre><td class="rouge-code"><pre><span class="na">version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">3'</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">traefik</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">traefik:latest</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">traefik</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+    <span class="na">security_opt</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">no-new-privileges:true</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">proxy</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">80:80</span>
+      <span class="pi">-</span> <span class="s">443:443</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">CF_API_EMAIL=user@example.com</span>
+      <span class="pi">-</span> <span class="s">CF_DNS_API_TOKEN=YOUR_API_TOKEN</span>
+      <span class="c1"># - CF_API_KEY=YOUR_API_KEY</span>
+      <span class="c1"># be sure to use the correct one depending on if you are using a token or key</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/etc/localtime:/etc/localtime:ro</span>
+      <span class="pi">-</span> <span class="s">/var/run/docker.sock:/var/run/docker.sock:ro</span>
+      <span class="pi">-</span> <span class="s">/home/username/traefik/data/traefik.yml:/traefik.yml:ro</span>
+      <span class="pi">-</span> <span class="s">/home/username/traefik/data/acme.json:/acme.json</span>
+      <span class="pi">-</span> <span class="s">/home/username/traefik/data/config.yml:/config.yml:ro</span>
+      <span class="pi">-</span> <span class="s">traefik-logs:/var/log/traefik</span>
+    <span class="na">labels</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.enable=true"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik.entrypoints=http"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik.rule=Host(`traefik-dashboard.local.example.com`)"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.middlewares.traefik-auth.basicauth.users=USER:BASIC_AUTH_PASSWORD"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik.middlewares=traefik-https-redirect"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.entrypoints=https"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.local.example.com`)"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.middlewares=traefik-auth"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls=true"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls.domains[0].main=local.example.com"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.example.com"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">traefik.http.routers.traefik-secure.service=api@internal"</span>
+
+<span class="na">networks</span><span class="pi">:</span>
+  <span class="na">proxy</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span> <span class="kc">true</span>
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">traefik-logs</span><span class="pi">:</span>
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker-compose up <span class="nt">-d</span> <span class="nt">--force-recreate</span>
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">cd </span>config/data
+nano config.yml
+</pre></table></code></div></div><p>add</p><div class="language-yml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre>    <span class="na">crowdsec-bouncer</span><span class="pi">:</span>
+      <span class="na">forwardauth</span><span class="pi">:</span>
+        <span class="na">address</span><span class="pi">:</span> <span class="s">http://bouncer-traefik:8080/api/v1/forwardAuth</span>
+        <span class="na">trustForwardHeader</span><span class="pi">:</span> <span class="kc">true</span>
+
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>nano traefik.yml
+</pre></table></code></div></div><div class="language-yml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="c1"># check to be sure you have your middleware set for both</span>
+<span class="na">entryPoints</span><span class="pi">:</span>
+  <span class="na">http</span><span class="pi">:</span>
+    <span class="na">address</span><span class="pi">:</span> <span class="s2">"</span><span class="s">:80"</span>
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">middlewares</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">crowdsec-bouncer@file</span>
+  <span class="na">https</span><span class="pi">:</span>
+    <span class="na">address</span><span class="pi">:</span> <span class="s2">"</span><span class="s">:443"</span>
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">middlewares</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">crowdsec-bouncer@file</span>
+</pre></table></code></div></div><h2 id="dashboard"><span class="me-2">Dashboard</span><a href="#dashboard" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>To add a self-hosted dashboard update your <code class="language-plaintext highlighter-rouge">docker-compose.yml</code></p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">cd </span>crowdsec
+<span class="nb">touch </span>Dockerfile
+</pre></table></code></div></div><div class="language-dockerfile highlighter-rouge"><div class="code-header"> <span data-label-text="Dockerfile"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="k">FROM</span><span class="s"> metabase/metabase</span>
+<span class="k">RUN </span><span class="nb">mkdir</span> /data/ <span class="o">&amp;&amp;</span> wget https://crowdsec-statics-assets.s3-eu-west-1.amazonaws.com/metabase_sqlite.zip <span class="o">&amp;&amp;</span> unzip metabase_sqlite.zip <span class="nt">-d</span> /data/
+</pre></table></code></div></div><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>nano docker-compose.yml
+</pre></table></code></div></div><div class="language-yaml highlighter-rouge"><div class="code-header"> <span data-label-text="YAML"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre><td class="rouge-code"><pre>  <span class="na">dashboard</span><span class="pi">:</span>
+    <span class="c1">#we're using a custom Dockerfile so that metabase pops with pre-configured dashboards</span>
+    <span class="na">build</span><span class="pi">:</span> <span class="s">./dashboard</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">always</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">3000:3000</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">MB_DB_FILE</span><span class="pi">:</span> <span class="s">/data/metabase.db</span>
+      <span class="na">MGID</span><span class="pi">:</span> <span class="s2">"</span><span class="s">${GID-1000}"</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s1">'</span><span class="s">crowdsec'</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">crowdsec-db:/metabase-data/</span>
+    <span class="na">networks</span><span class="pi">:</span>
+      <span class="na">crowdsec_test</span><span class="pi">:</span>
+        <span class="na">ipv4_address</span><span class="pi">:</span> <span class="s">172.20.0.5</span>
+</pre></table></code></div></div><p>restart container</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker-compose up <span class="nt">-d</span> <span class="nt">--force-recreate</span>
+</pre></table></code></div></div><p>Default’s credentials for metabase are <code class="language-plaintext highlighter-rouge">crowdsec@crowdsec.net</code> and <code class="language-plaintext highlighter-rouge">!!Cr0wdS3c_M3t4b4s3??</code> Be sure to change this.</p><h2 id="crowdsec-commands"><span class="me-2">CrowdSec Commands</span><a href="#crowdsec-commands" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>see metrics</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker <span class="nb">exec </span>crowdsec cscli metrics
+</pre></table></code></div></div><p>see bans</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker <span class="nb">exec </span>crowdsec cscli decisions list
+</pre></table></code></div></div><p>manually install collections</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker <span class="nb">exec </span>crowdsec cscli collections <span class="nb">install </span>crowdsecurity/traefik
+</pre></table></code></div></div><p>update hubs</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker <span class="nb">exec </span>crowdsec cscli hub update
+</pre></table></code></div></div><p>upgrade hubs</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker <span class="nb">exec </span>crowdsec cscli hub upgrade
+</pre></table></code></div></div><p>add bouncer</p><p>(save api key somewhere)</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker <span class="nb">exec </span>crowdsec cscli bouncers add bouncer-traefik
+</pre></table></code></div></div><p>ban ip</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker <span class="nb">exec </span>crowdsec cscli decisions add <span class="nt">--ip</span> 192.168.0.101
+</pre></table></code></div></div><p>unban ip</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>docker <span class="nb">exec </span>crowdsec cscli decisions delete <span class="nt">--ip</span> 192.168.0.101
+</pre></table></code></div></div><h2 id="links"><span class="me-2">Links</span><a href="#links" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>🛍️ Check out the new Merch Shop at <a href="https://l.technotim.com/shop">https://l.technotim.com/shop</a></p><p>⚙️ See all the hardware I recommend at <a href="https://l.technotim.com/gear">https://l.technotim.com/gear</a></p><p>🚀 Don’t forget to check out the <a href="https://l.technotim.com/quick-start">🚀Launchpad repo</a> with all of the quick start source files</p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw me-1"></i> <a href="/categories/homelab/">homelab</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw me-1"></i> <a href="/tags/homelab/" class="post-tag no-text-decoration" >homelab</a> <a href="/tags/hardware/" class="post-tag no-text-decoration" >hardware</a> <a href="/tags/security/" class="post-tag no-text-decoration" >security</a> <a href="/tags/self-hosted/" class="post-tag no-text-decoration" >self-hosted</a> <a href="/tags/crowdsec/" class="post-tag no-text-decoration" >crowdsec</a> <a href="/tags/traefik/" class="post-tag no-text-decoration" >traefik</a> <a href="/tags/fail2ban/" class="post-tag no-text-decoration" >fail2ban</a></div><div class=" post-tail-bottom d-flex justify-content-between align-items-center mt-5 pb-2 " ><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper d-flex align-items-center"> <span class="share-label text-muted">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Open%20Source%20&%20Collaborative%20Security%20with%20CrowdSec%20and%20Traefik%20-%20CrowdSec%20&%20Traefik%20Tutorial%20-%20Techno%20Tim&url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fcrowdsec-traefik%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter"> <i class="fa-fw fa-brands fa-square-x-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Open%20Source%20&%20Collaborative%20Security%20with%20CrowdSec%20and%20Traefik%20-%20CrowdSec%20&%20Traefik%20Tutorial%20-%20Techno%20Tim&u=https%3A%2F%2Ftechnotim.com%2Fposts%2Fcrowdsec-traefik%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fcrowdsec-traefik%2F&text=Open%20Source%20&%20Collaborative%20Security%20with%20CrowdSec%20and%20Traefik%20-%20CrowdSec%20&%20Traefik%20Tutorial%20-%20Techno%20Tim" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fcrowdsec-traefik%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Linkedin" aria-label="Linkedin"> <i class="fa-fw fab fa-linkedin"></i> </a> <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/share-to-mastodon/+esm"></script> <button class="btn text-start" data-bs-toggle="tooltip" data-bs-placement="top" title="Mastodon" aria-label="Mastodon"> <share-to-mastodon class="share-mastodon" message="Open%20Source%20&%20Collaborative%20Security%20with%20CrowdSec%20and%20Traefik%20-%20CrowdSec%20&%20Traefik%20Tutorial%20-%20Techno%20Tim" url="https%3A%2F%2Ftechnotim.com%2Fposts%2Fcrowdsec-traefik%2F"customInstanceList="[{&quot;label&quot;:&quot;mastodon.social&quot;,&quot;link&quot;:&quot;https://mastodon.social/&quot;},{&quot;label&quot;:&quot;mastodon.online&quot;,&quot;link&quot;:&quot;https://mastodon.online/&quot;},{&quot;label&quot;:&quot;fosstodon.org&quot;,&quot;link&quot;:&quot;https://fosstodon.org/&quot;},{&quot;label&quot;:&quot;photog.social&quot;,&quot;link&quot;:&quot;https://photog.social/&quot;}]" > <i class="fa-fw fa-brands fa-mastodon"></i> </share-to-mastodon> </button> <button id="copy-link" aria-label="Copy link" class="btn small" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy link" data-title-succeed="Link copied successfully!" > <i class="fa-fw fas fa-link pe-none fs-6"></i> </button> </span></div></div></div></article></main><aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 text-muted"><div class="access"><section id="access-lastmod"><h2 class="panel-heading">Recently Updated</h2><ul class="content list-unstyled ps-0 pb-1 ms-1 mt-2"><li class="text-truncate lh-lg"> <a href="/posts/homelab-hardware-tour-2026/">My 2026 Homelab Tour (Rack + Servers + Network + Storage)</a><li class="text-truncate lh-lg"> <a href="/posts/beelink-me-pro/">Beelink ME Pro: Tiny NAS, Stacked Hardware</a><li class="text-truncate lh-lg"> <a href="/posts/paperless-ngx-local-ai/">Self-Hosted Paperless-ngx + Optional Local AI: Private Documents and Improves OCR & Search (Full Setup)</a><li class="text-truncate lh-lg"> <a href="/posts/homelab-services-tour-2022/">Techno Tim HomeLab Services Tour (Late 2022) - What am I Self-Hosting in my HomeLab?</a><li class="text-truncate lh-lg"> <a href="/posts/truenas-zfs-expand/">The EASIEST way to Expand Your ZFS Pool in TrueNAS (But is it the Best?)</a></ul></section><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div class="toc-border-cover z-3"></div><section id="toc-wrapper" class="invisible position-sticky ps-0 pe-4 pb-4"><h2 class="panel-heading ps-3 pb-2 mb-0">Contents</h2><nav id="toc"></nav></section></aside></div><div class="row"><div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4"><aside id="related-posts" aria-labelledby="related-label"><h3 class="mb-4" id="related-label">Further Reading</h3><nav class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4"><article class="col"> <a href="/posts/self-hosting-security/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1643461200" data-df="ll" > Jan 29, 2022 </time><h4 class="pt-0 my-2">Self-Hosting Security Guide for your HomeLab</h4><div class="text-muted"><p>When most people think about self-hosting services in their HomeLab, they often think of the last mile. By last mile I mean the very last hop before a user accesses your services. This last hop, wh...</p></div></div></a></article><article class="col"> <a href="/posts/webtop-container/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1624197600" data-df="ll" > Jun 20, 2021 </time><h4 class="pt-0 my-2">Linux desktop, inside of a container, inside of a browser??? Yes. A Webtop.</h4><div class="text-muted"><p>Have you ever thought about running a Linux desktop inside of a container? Me neither until I found this awesome project from LinuxServer called Webtops.A webtop is a technology stack that allows ...</p></div></div></a></article><article class="col"> <a href="/posts/authelia-traefik/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1622901600" data-df="ll" > Jun 5, 2021 </time><h4 class="pt-0 my-2">2 Factor Auth and Single Sign on with Authelia</h4><div class="text-muted"><p>Authelia is an open source Single Sign On and 2FA companion for reverse proxies.It helps you secure your endpoints with single factor and 2 factor auth.It works with Nginx, Traefik, and HA proxy.To...</p></div></div></a></article></nav></aside><nav class="post-navigation d-flex justify-content-between" aria-label="Post Navigation"> <a href="/posts/self-hosting-security/" class="btn btn-outline-primary" aria-label="Older" ><p>Self-Hosting Security Guide for your HomeLab</p></a> <a href="/posts/custom-docker-image/" class="btn btn-outline-primary" aria-label="Newer" ><p>Building your first Dockerfile, Image, and Container</p></a></nav><footer aria-label="Site Info" class=" d-flex flex-column justify-content-center text-muted flex-lg-row justify-content-lg-between align-items-lg-center pb-lg-3 " ><p>© <time>2026</time> <a href="https://l.technotim.com/twitter">Techno Tim</a>. <span data-bs-toggle="tooltip" data-bs-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author." >Some rights reserved.</span></p><p><a href="/sponsor/">🤝 Help keep this ad-free!</href> &nbsp; &nbsp;<a href="https://l.technotim.com/shop">🛍️ Check out the new merch shop!</href></p></footer></div></div><div id="search-result-wrapper" class="d-flex justify-content-center d-none"><div class="col-11 content"><div id="search-hints"><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><aside aria-label="Scroll to Top"> <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow"> <i class="fas fa-angle-up"></i> </button></aside></div><div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div><script> document.addEventListener('DOMContentLoaded', () => { SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<article class="px-1 px-sm-2 px-lg-4 px-xl-0"><header><h2><a href="{url}">{title}</a></h2><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div></header><p>{content}</p></article>', noResultsText: '<p class="mt-5">Oops! No results found.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="me-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); }); </script>
