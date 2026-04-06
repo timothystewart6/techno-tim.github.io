@@ -23,7 +23,7 @@ timezone: America/Chicago
 
 title: Techno Tim                          # the main title
 
-tagline: Engineer. Builder. Creator. | From Code to Cloud   # it will display as the sub-title
+tagline: Engineer. Builder. Creator. From Code to Cloud   # it will display as the sub-title
 
 description: >-                        # used by seo meta and the atom feed
  Techno Tim Home - Documentation and More
