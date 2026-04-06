@@ -17,7 +17,7 @@ cache: &global_cache
   policy: pull-push
 
 build:
-  image: ruby:3.2.2
+  image: ruby:3.3.6
   stage: test
   artifacts:
     paths:

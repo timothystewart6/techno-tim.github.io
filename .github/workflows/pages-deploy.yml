@@ -23,7 +23,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@2654679fe7f7c29875c669398a8ec0791b8a64a1  # 1.215.0
         with:
-          ruby-version: 3.2.2
+          ruby-version: 3.3.6
           bundler-cache: true
 
       - name: Check baseurl
