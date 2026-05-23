@@ -304,8 +304,7 @@ This project was built autonomously using an AI coding agent. Here is the prompt
 
 <details>
 <summary>View the full agent prompt</summary>
-
-```text
+<pre>
 You are working in an empty project folder.
 
 Your goal is to autonomously build a production-ready web app and not stop until the app fully works, the tests pass, and the project is ready to ship.
@@ -358,14 +357,14 @@ Out of scope:
 - authentication, user accounts, live service health checks, background jobs, external APIs, charts or analytics, notifications, websockets, complex dashboard widgets, multi-user support
 
 Technical requirements:
-- TypeScript everywhere
-- Next.js App Router
-- Tailwind CSS
-- Prisma ORM
-- PostgreSQL
-- Vitest for unit/integration tests
-- Playwright for end-to-end tests
-- Docker Compose to run the app and PostgreSQL together
+- Use TypeScript everywhere
+- Use Next.js App Router
+- Use Tailwind CSS
+- Use Prisma ORM
+- Use PostgreSQL
+- Use Vitest for unit/integration tests
+- Use Playwright for end-to-end tests
+- Use Docker Compose to run the app and PostgreSQL together
 - Prefer simple, conventional architecture over cleverness
 
 Required pages and UX:
@@ -421,8 +420,9 @@ Behavior requirements:
 - Continue until the project is actually working and verified
 
 Definition of done: The project is done only when the app works, all features are implemented, migrations and seed data work, the app runs on port 3100, lint/typecheck/tests/e2e all pass, Docker Compose works, documentation is complete, and TASKS.md is fully checked off.
-```
 
+Start by creating SPEC.md, TASKS.md, AGENTS.md, and PROGRESS.md, then begin implementation.
+</pre>
 </details>
 
 ---
