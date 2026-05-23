@@ -298,6 +298,135 @@ The flag choices for this model are documented in eugr's [MiniMax-M2.7-AWQ recip
 
 ---
 
+## Agent prompt
+
+This project was built autonomously using an AI coding agent. Here is the prompt used to drive it.
+
+<details>
+<summary>View the full agent prompt</summary>
+
+```text
+You are working in an empty project folder.
+
+Your goal is to autonomously build a production-ready web app and not stop until the app fully works, the tests pass, and the project is ready to ship.
+
+Favor completion and correctness over ambitious features. Favor the simplest correct implementation that satisfies the requirements. Do not expand scope unless expansion is required to satisfy the existing requirements.
+
+Project: Build a Next.js TypeScript homelab service tracker using Tailwind CSS, Prisma, and PostgreSQL.
+
+Product scope: This app is a simple CRUD tracker for homelab services. Keep it minimal, clean, and reliable. Do not add extra features beyond the defined scope unless necessary to complete the app.
+
+Core features:
+- View a list of services
+- Add a service
+- Edit a service
+- Delete a service
+- Filter services by category
+- Filter services by status
+- Optionally search services by name or host
+- Seed the database with example services
+
+Service data model — each service must have:
+- name
+- category
+- host
+- port
+- url
+- status
+- notes
+
+Status must be one of: online, offline, unknown
+
+Category must be one of: storage, virtualization, media, monitoring, networking, automation
+
+Seed data requirements — seed the database with at least these example services:
+- Proxmox
+- TrueNAS
+- Plex
+- Grafana
+- Pi-hole
+
+Each seeded service should include all required fields with realistic example values for hostnames, ports, URLs, and notes.
+
+App runtime requirements:
+- The app must run on port 3100
+- Docker Compose must expose the app on port 3100
+- README instructions must use port 3100 consistently
+- End-to-end tests should assume the app runs on port 3100
+
+Out of scope:
+- authentication, user accounts, live service health checks, background jobs, external APIs, charts or analytics, notifications, websockets, complex dashboard widgets, multi-user support
+
+Technical requirements:
+- TypeScript everywhere
+- Next.js App Router
+- Tailwind CSS
+- Prisma ORM
+- PostgreSQL
+- Vitest for unit/integration tests
+- Playwright for end-to-end tests
+- Docker Compose to run the app and PostgreSQL together
+- Prefer simple, conventional architecture over cleverness
+
+Required pages and UX:
+- A main page that lists all services
+- A way to create a new service
+- A way to edit an existing service
+- A way to delete a service with confirmation
+- Filtering controls for category and status
+- A clean empty state if no services exist
+
+Autonomous workflow requirements:
+
+First create: SPEC.md, TASKS.md, AGENTS.md, PROGRESS.md
+
+SPEC.md must define: scope, features, data model, routes/pages, testing plan, Docker/database plan, definition of done.
+TASKS.md must break the project into small, checkable tasks.
+AGENTS.md must define the working loop and project rules.
+PROGRESS.md must be updated as work is completed.
+
+Work in this loop:
+1. Read SPEC.md
+2. Choose the next unchecked task from TASKS.md
+3. Implement that task
+4. Write or update tests for that feature
+5. Run lint, type checking, and relevant tests
+6. If something fails, fix it before moving on
+7. Update TASKS.md and PROGRESS.md
+8. Repeat until all tasks are complete
+
+Quality gates — after each feature: update tests, run lint, run typecheck, run relevant tests.
+
+Before declaring completion:
+- CRUD flows must work
+- Filters must work
+- Prisma schema must be complete and migrations must work
+- Seed data must work
+- App must build and run on port 3100
+- Lint, type checking, unit/integration tests, and end-to-end tests must pass
+- Docker Compose must run the app and database successfully
+- README must be accurate
+
+Testing requirements — end-to-end tests that verify a user can:
+- View seeded services
+- Add a service
+- Edit a service
+- Delete a service
+- Filter by category
+- Filter by status
+
+Behavior requirements:
+- Work autonomously — do not stop at planning, scaffolding, or unverified code
+- Do not stop if tests, lint, or type checking fail — fix and continue
+- Continue until the project is actually working and verified
+
+Definition of done: The project is done only when the app works, all features are implemented, migrations and seed data work, the app runs on port 3100, lint/typecheck/tests/e2e all pass, Docker Compose works, documentation is complete, and TASKS.md is fully checked off.
+```
+
+</details>
+
+---
+
 ## Links
 
 - Repository: [github.com/timothystewart6/vllm-gb10](https://github.com/timothystewart6/vllm-gb10)
