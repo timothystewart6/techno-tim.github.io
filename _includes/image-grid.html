@@ -1,0 +1,69 @@
+{% comment %}
+  image-grid.html - 2-column CSS grid of images with Chirpy-compatible LQIP and per-image captions.
+
+  Usage (up to 4 images):
+    {% include image-grid.html
+      src1="/assets/img/posts/POST/image1.webp"
+      lqip1="data:image/jpeg;base64,..."
+      alt1="Description of image 1"
+      caption1="Caption text for image 1"
+
+      src2="/assets/img/posts/POST/image2.webp"
+      lqip2="data:image/jpeg;base64,..."
+      alt2="Description of image 2"
+      caption2="Caption text for image 2"
+
+      src3="/assets/img/posts/POST/image3.webp"
+      lqip3="data:image/jpeg;base64,..."
+      alt3="Description of image 3"
+      caption3="Caption text for image 3"
+
+      src4="/assets/img/posts/POST/image4.webp"
+      lqip4="data:image/jpeg;base64,..."
+      alt4="Description of image 4"
+      caption4="Caption text for image 4"
+    %}
+{% endcomment %}
+
+<style>
+  .image-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; }
+  .image-grid figure { margin: 0; }
+  .image-grid img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .image-grid figcaption { display: block; text-align: center; font-size: 80%; color: #6d6c6c; padding-top: 0.25rem; }
+  @media (max-width: 575px) {
+    .image-grid { grid-template-columns: 1fr; }
+    .image-grid img { aspect-ratio: auto; object-fit: unset; height: auto; }
+  }
+</style>
+
+<div class="image-grid">
+
+{% if include.src1 %}
+  <figure>
+    <img src="{{ include.src1 }}" lqip="{{ include.lqip1 }}" alt="{{ include.alt1 }}">
+    {% if include.caption1 %}<figcaption>{{ include.caption1 }}</figcaption>{% endif %}
+  </figure>
+{% endif %}
+
+{% if include.src2 %}
+  <figure>
+    <img src="{{ include.src2 }}" lqip="{{ include.lqip2 }}" alt="{{ include.alt2 }}">
+    {% if include.caption2 %}<figcaption>{{ include.caption2 }}</figcaption>{% endif %}
+  </figure>
+{% endif %}
+
+{% if include.src3 %}
+  <figure>
+    <img src="{{ include.src3 }}" lqip="{{ include.lqip3 }}" alt="{{ include.alt3 }}">
+    {% if include.caption3 %}<figcaption>{{ include.caption3 }}</figcaption>{% endif %}
+  </figure>
+{% endif %}
+
+{% if include.src4 %}
+  <figure>
+    <img src="{{ include.src4 }}" lqip="{{ include.lqip4 }}" alt="{{ include.alt4 }}">
+    {% if include.caption4 %}<figcaption>{{ include.caption4 }}</figcaption>{% endif %}
+  </figure>
+{% endif %}
+
+</div>
