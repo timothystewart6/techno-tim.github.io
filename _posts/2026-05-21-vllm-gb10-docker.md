@@ -173,13 +173,14 @@ This is the setup I run on my two GX10s serving [MiniMax-M2.7-AWQ](https://huggi
 
 The head node starts the Ray cluster and runs `vllm serve`. The worker node joins the cluster and contributes its GPU. Together they give you TP=2 across both machines.
 
-You will need a `.env` file alongside each compose file:
+Ready-to-use compose files live in the repo under [`examples/two-node-cluster/`](https://github.com/timothystewart6/vllm-gb10/tree/main/examples/two-node-cluster). The snippets below show the key settings - copy `.env.example` to `.env` and fill in your values:
 
 ```bash
-HEAD_IP=<qsfp ip of gx10-1>
-WORKER_IP=<qsfp ip of gx10-2>
+HEAD_IP=<CX-7 QSFP IP of node 1, e.g. 10.10.0.1>
+WORKER_IP=<CX-7 QSFP IP of node 2, e.g. 10.10.0.2>
 HF_TOKEN=<huggingface token>
-QSFP_IFACE=enp1s0f0np0
+QSFP_IFACE=enp1s0f0np0   # verify with: ibdev2netdev
+IB_HCA=mlx5_0            # IB device name for NCCL RoCE (ibdev2netdev maps mlx5_0 -> enp1s0f0np0)
 ```
 
 **Head node** (`docker-compose.yml` on gx10-1):
@@ -202,6 +203,10 @@ services:
       - /mnt/llm/models/huggingface:/root/.cache/huggingface
     env_file:
       - .env
+    cap_add:
+      - SYS_PTRACE
+    devices:
+      - /dev/infiniband:/dev/infiniband
     environment:
       - HF_TOKEN=${HF_TOKEN}
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
@@ -214,11 +219,18 @@ services:
       - RAY_memory_monitor_refresh_ms=0
       - RAY_num_prestart_python_workers=0
       - RAY_object_store_memory=1073741824
+      - RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
       - MASTER_ADDR=${HEAD_IP}
       - MN_IF_NAME=${QSFP_IFACE}
       - SAFETENSORS_FAST_GPU=1
+      - VLLM_ATTENTION_BACKEND=FLASHINFER
+      # NCCL_IB_DISABLE=0 enables RoCE over the CX-7 NIC. Setting it to 1 forces
+      # TCP and cuts throughput by ~4x. NCCL_NET_GDR_LEVEL=0 disables GPUDirect
+      # RDMA only (unsafe on GB10 unified-memory SoC) - CPU-side RoCE stays active.
       - NCCL_IB_DISABLE=0
-      - NCCL_IB_HCA=rocep1s0f0,roceP2p1s0f0
+      - NCCL_NET_GDR_LEVEL=0
+      - NCCL_IB_HCA=${IB_HCA}
+      - NCCL_IB_GID_INDEX=3
       - NCCL_ALGO=Ring
       - NCCL_MIN_NCHANNELS=4
       - OMP_NUM_THREADS=4
@@ -226,7 +238,7 @@ services:
     # sleep 60 gives the worker time to join before vllm allocates the placement
     # group. Without it, vllm can fall back to single-GPU mode silently.
     command:
-      - "ray start --head --node-ip-address=${HEAD_IP} --port=6379 --object-store-memory 1073741824 --num-cpus 2 --include-dashboard=false --disable-usage-stats && sleep 60 && vllm serve cyankiwi/MiniMax-M2.7-AWQ-4bit --host 0.0.0.0 --port 8000 --trust-remote-code --tensor-parallel-size 2 --distributed-executor-backend ray --gpu-memory-utilization 0.8 --load-format fastsafetensors --max-model-len 196608 --enable-auto-tool-choice --tool-call-parser minimax_m2 --reasoning-parser minimax_m2"
+      - "ray start --head --node-ip-address=${HEAD_IP} --port=6379 --object-store-memory 1073741824 --num-cpus 2 --include-dashboard=false --disable-usage-stats && sleep 60 && vllm serve cyankiwi/MiniMax-M2.7-AWQ-4bit --host 0.0.0.0 --port 8000 --trust-remote-code --tensor-parallel-size 2 --distributed-executor-backend ray --gpu-memory-utilization 0.75 --load-format fastsafetensors --max-model-len 196608 --kv-cache-dtype fp8_e4m3 --max-num-batched-tokens 8192 --enable-auto-tool-choice --tool-call-parser minimax_m2 --reasoning-parser minimax_m2 --served-model-name MiniMax-M2.7-AWQ-4bit"
     deploy:
       resources:
         reservations:
@@ -275,8 +287,12 @@ services:
       - MASTER_ADDR=${HEAD_IP}
       - MN_IF_NAME=${QSFP_IFACE}
       - SAFETENSORS_FAST_GPU=1
+      - VLLM_ATTENTION_BACKEND=FLASHINFER
       - NCCL_IB_DISABLE=0
-      - NCCL_IB_HCA=rocep1s0f0,roceP2p1s0f0
+      - NCCL_NET_GDR_LEVEL=0
+      - NCCL_IB_HCA=${IB_HCA}
+      - NCCL_IB_GID_INDEX=3
+      - RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
       - NCCL_ALGO=Ring
       - NCCL_MIN_NCHANNELS=4
       - OMP_NUM_THREADS=4
@@ -298,7 +314,9 @@ services:
       start_period: 60s
 ```
 
-The flag choices for this model are documented in eugr's [MiniMax-M2.7-AWQ recipe](https://github.com/eugr/spark-vllm-docker/blob/main/recipes/minimax-m2.7-awq.yaml). If you are serving a different model, adjust `--gpu-memory-utilization`, `--max-model-len`, `--tool-call-parser`, and `--reasoning-parser` to match your model's recipe.
+The complete, ready-to-use files (including `.env.example`) are in the repo at [`examples/two-node-cluster/`](https://github.com/timothystewart6/vllm-gb10/tree/main/examples/two-node-cluster).
+
+The flag choices for this model are documented in eugr's [MiniMax-M2.7-AWQ recipe](https://github.com/eugr/spark-vllm-docker/blob/main/recipes/minimax-m2.7-awq.yaml) and the [Spark Arena recipe](https://spark-arena.com/api/recipes/0e8561e4-eea6-44f5-b800-8984a26bbbc2/raw). If you are serving a different model, adjust `--gpu-memory-utilization`, `--max-model-len`, `--kv-cache-dtype`, `--tool-call-parser`, and `--reasoning-parser` to match your model's recipe.
 
 ---
 
