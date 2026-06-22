@@ -13,6 +13,8 @@ When I built my local AI cluster on a pair of ASUS Ascent GX10s, the hard part w
 
 If you saw [that post](https://technotim.com/posts/local-ai-gx10/), you know the GX10 is an ARM64 machine built around NVIDIA's GB10 Grace-Blackwell SoC. It is not an x86 server, and it is not a standard consumer GPU. The CUDA architecture is `sm_121a`, which is new enough that most pre-built images either do not exist yet or lag behind current vLLM releases.
 
+This post assumes the base NVIDIA stack is already installed. If you are starting from a fresh machine and want the server-first Ubuntu path, use [Ubuntu Server on the NVIDIA DGX Spark](/posts/ubuntu-gb10/) or the companion repo at [github.com/timothystewart6/ubuntu-gb10](https://github.com/timothystewart6/ubuntu-gb10) first.
+
 So I built my own image pipeline. Here is what it does and how to use it.
 
 ---
@@ -80,6 +82,8 @@ All pins live in a single file: `versions.env`. All generated lockfiles live in 
 ## Quick start
 
 The image is published to both GHCR and Docker Hub on every green build of `main`.
+
+This assumes Docker and the NVIDIA Container Toolkit are already configured. For a fresh GB10 install, the [ubuntu-gb10](https://github.com/timothystewart6/ubuntu-gb10) playbook handles that baseline before you get to model serving.
 
 ```bash
 docker pull ghcr.io/timothystewart6/vllm-gb10:latest
@@ -298,6 +302,15 @@ The flag choices for this model are documented in eugr's [MiniMax-M2.7-AWQ recip
 
 ---
 
+## Where to Buy
+
+- NVIDIA DGX Spark: [NVIDIA](https://www.nvidia.com/en-us/products/workstations/dgx-spark/) / [Amazon](https://amzn.to/4eXpeM5)
+- ASUS Ascent GX10: [ASUS](https://www.asus.com/networking-iot-servers/desktop-ai-supercomputer/ultra-small-ai-supercomputers/asus-ascent-gx10/) / [Amazon](https://amzn.to/3PxWqjl)
+
+(Affiliate links. I may receive a small commission at no cost to you.)
+
+---
+
 ## Links
 
 - Repository: [github.com/timothystewart6/vllm-gb10](https://github.com/timothystewart6/vllm-gb10)
@@ -306,6 +319,8 @@ The flag choices for this model are documented in eugr's [MiniMax-M2.7-AWQ recip
 - eugr's spark-vllm-docker (the original community project): [github.com/eugr/spark-vllm-docker](https://github.com/eugr/spark-vllm-docker)
 - NVIDIA NGC vLLM image: [catalog.ngc.nvidia.com/orgs/nvidia/containers/vllm](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/vllm)
 - My GX10 cluster writeup: [technotim.com/posts/local-ai-gx10](https://technotim.com/posts/local-ai-gx10/)
+- Ubuntu Server setup for GB10: [technotim.com/posts/ubuntu-gb10](https://technotim.com/posts/ubuntu-gb10/)
+- Ubuntu automation repo: [github.com/timothystewart6/ubuntu-gb10](https://github.com/timothystewart6/ubuntu-gb10)
 
 ---
 
