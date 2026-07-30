@@ -460,7 +460,8 @@ Several devices in this rack used 12 volts, including the fan panels and a ZimaB
 
 The downside is the app dependency. If the app disappears, so does your ability to reconfigure the base.
 
-I'd like to see a CLI or another local configuration option eventually.
+> **Update:** Tundra Labs does provide [lib.vflex.app](https://github.com/tundra-labs/lib.vflex.app), an open-source CLI and web app for configuring VFLEX locally.
+{: .prompt-info }
 
 ### A manual USB-C-to-DC trigger cable
 
