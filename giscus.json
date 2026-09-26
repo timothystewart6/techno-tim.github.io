@@ -1,0 +1,58 @@
+# /usr/local/bin/ffmpeg -threads 1 -nostdin -hide_banner -stats -loglevel info \
+  -init_hw_device cuda -hwaccel cuda -hwaccel_output_format cuda \
+  -ss 00:01:30 \
+  -c:v av1_cuvid \
+  -i "/music_videos/videos/video.mkv" \
+  -filter_complex "[0:1]loudnorm=I=-18:TP=-1.5:LRA=11,aresample=48000,aresample=async=1,apad[a];[0:0]scale_cuda=format=yuv420p[vpf]" \
+  -map "[vpf]" -map "[a> ]" \
+  -t 00:00:30 \
+  -c:v hevc_nvenc -preset:v llhq -b:v 20000k -maxrate:v 20000k -bufsize:v 40000k \
+  -c:a aac -b> :a 256k -ar 48k \
+  -f hls -hls_time 4 -hls_list_size 0 \
+  -hls_segment_filename "/transcode/.troubleshooting/live%06d> .ts" \
+  -hls_flags append_list+independent_segments \
+  /transcode/.troubleshooting/live.m3u8
+> > > > > > > > > Input #0, matroska,webm, from '/music_videos/videos/video.mkv':
+  Metadata:
+    COMPATIBLE_BRANDS: iso6av01mp41
+    MAJOR_BRAND     : dash
+    MINOR_VERSION   : 0
+    ENCODER         : Lavf58.76.100
+  Duration: 00:03:00.19, start: 0.000000, bitrate: 1394 kb/s
+  Stream #0:0: Video: av1 (libdav1d), yuv420p(tv, bt709), 1920x1080, SAR 1:1 DAR 16:9, 25 fps, 25 tbr, 1k tbn (default)
+      Metadata:
+        HANDLER_NAME    : ISO Media file produced by Google Inc.
+        VENDOR_ID       : [0][0][0][0]
+        DURATION        : 00:03:00.120000000
+  Stream #0:1(eng): Audio: aac, 44100 Hz, stereo, fltp (default)
+      Metadata:
+        HANDLER_NAME    : ISO Media file produced by Google Inc.
+        VENDOR_ID       : [0][0][0][0]
+        DURATION        : 00:03:00.187000000
+Stream mapping:
+  Stream #0:0 (av1_cuvid) -> scale_cuda:default
+  Stream #0:1 (aac) -> loudnorm:default
+  scale_cuda:default -> Stream #0:0 (hevc_nvenc)
+  apad:default -> Stream #0:1 (aac)
+[hevc_nvenc @ 0x55e7e0d4d940] The selected preset is deprecated. Use p1 to p7 + -tune or fast/medium/slow.
+[hls @ 0x55e7e0d62c80] Stream HEVC is not hvc1, you should use tag:v hvc1 to set it.
+Output #0, hls, to '/transcode/.troubleshooting/live.m3u8':
+  Metadata:
+    COMPATIBLE_BRANDS: iso6av01mp41
+    MAJOR_BRAND     : dash
+    MINOR_VERSION   : 0
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: hevc, cuda(tv, bt709, progressive), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 20000 kb/s, 25 fps, 90k tbn
+      Metadata:
+        encoder         : Lavc61.19.101 hevc_nvenc
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/20000000 buffer size: 40000000 vbv_delay: N/A
+  Stream #0:1: Audio: aac, 48000 Hz, stereo, fltp, 256 kb/s
+      Metadata:
+        encoder         : Lavc61.19.101 aac
+[hls @ 0x55e7e0d62c80] Opening '/transcode/.troubleshooting/live000031.ts' for writing
+[hls @ 0x55e7e0d62c80] Opening '/transcode/.troubleshooting/live.m3u8.tmp' for writing
+[out#0/hls @ 0x55e7e0d62b80] video:72017KiB audio:955KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=  750 fps=292 q=7.0 Lsize=N/A time=00:00:30.00 bitrate=N/A speed=11.7x
+[aac @ 0x55e7e0d4e840] Qavg: 632.646
+# 
