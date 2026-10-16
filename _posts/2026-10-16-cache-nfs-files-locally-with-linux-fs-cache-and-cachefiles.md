@@ -109,6 +109,7 @@ printf 'Full model files: %s\n' "${#MODEL_FILES[@]}"
 find -L "$MODEL" -type f -printf '%s\n' | \
   awk '{ files++; bytes += $1 } END { printf "Total: %d files, %.2f GiB\n", files, bytes / 1073741824 }'
 ```
+
 Next is the read helper. It accepts either `shard` or `full`, so I don't have to change the file list between tests. That's useful because I originally managed to restore the full list without noticing and ended up reading all 74 files when I thought I was testing one.
 
 I'm using `dd` to read each file and discard the bytes into `/dev/null`. This doesn't copy anything to a new file or load the model into a GPU. It measures the file-reading part of the workload. The helper prints the number of completed files, elapsed time, NFS READ data, and NFS READ requests.
@@ -241,7 +242,6 @@ EOF
 
 Once mounted, `df -h /var/cache/fscache-demo` shows the dedicated ext4 filesystem. The image reserves 256 GiB on the host, but the formatted filesystem shows **about 251 GiB** available because ext4 has its own overhead. `du -h /var/cache/fscache-demo.img` shows the space allocated on the host disk.
 
-
 ## Configure CacheFiles, culling, and LRU
 
 Now I'll tell CacheFiles where that storage is and when it should make room. This is a small configuration file, but the settings are worth understanding rather than just pasting them in.
@@ -311,6 +311,7 @@ sudo mount -t nfs4 \
   "${NAS_IP}:/mnt/storage0/services/llm" /mnt/llm
 findmnt -M /mnt/llm -n -o OPTIONS | tr ',' '\n' | grep -x fsc
 ```
+
 The last command should print `fsc`. If the unmount is busy, stop whatever is using `/mnt/llm` before retrying rather than forcing it.
 
 Now read the **same shard** twice. The first pass is cold for FS-Cache. Linux reads the file from TrueNAS and can store it on the SSD as it goes. The second pass clears RAM again but leaves the SSD cache in place.
@@ -325,7 +326,7 @@ read_model shard
 
 On the warm pass you should see **zero NFS READ requests** if that shard was fully cached and still valid. The client can still contact TrueNAS for metadata checks, but the file data doesn't need to cross the network again.
 
-In the video, the **first FS-Cache read also took about 4.5 seconds** because Linux still had to retrieve the file over NFS. After it had cached the shard, the same read dropped to **1.7 seconds**. That's roughly two and a half times faster using the rounded timings from the recording.
+The **first FS-Cache read also took about 4.5 seconds** because Linux still had to retrieve the file over NFS. After it had cached the shard, the same read dropped to **1.7 seconds**. That's roughly two and a half times faster using the rounded timings from the test.
 
 The timer is useful, but don't rely on it alone to prove the cache is working. The helper also reports NFS READ data and request counts. On a successful warm read, those counters should stay at or near zero, even though NFS might still contact the server for metadata validation.
 
