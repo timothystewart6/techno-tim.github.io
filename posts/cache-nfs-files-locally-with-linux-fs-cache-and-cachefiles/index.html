@@ -1,0 +1,579 @@
+<!doctype html><html lang="en" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e"><meta name="viewport" content="width=device-width, user-scalable=no initial-scale=1, shrink-to-fit=no, viewport-fit=cover" ><meta name="generator" content="Jekyll v4.4.1" /><meta property="og:title" content="Cache NFS Files Locally with Linux FS-Cache and CacheFiles" /><meta property="og:locale" content="en" /><meta name="description" content="I keep most of my AI models on TrueNAS and access them over NFS from several Linux machines. Some of those models are well over 100 GiB, and I don’t really want to maintain a separate copy on every machine. That’s why I have a NAS in the first place." /><meta name="twitter:description" property="og:description" content="I keep most of my AI models on TrueNAS and access them over NFS from several Linux machines. Some of those models are well over 100 GiB, and I don’t really want to maintain a separate copy on every machine. That’s why I have a NAS in the first place." /><link rel="canonical" href="https://technotim.com/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/" /><meta property="og:url" content="https://technotim.com/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/" /><meta property="og:site_name" content="Techno Tim" /><meta property="og:image" content="https://images.technotim.com/assets/img/headers/nfs-fscache-cachefiles.webp" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2026-10-16T08:00:00-05:00" /><meta property="article:modified_time" content="2026-10-16T12:37:27-05:00" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:image" content="https://images.technotim.com/assets/img/headers/nfs-fscache-cachefiles.webp" /><meta name="twitter:title" content="Cache NFS Files Locally with Linux FS-Cache and CacheFiles" /><meta name="twitter:site" content="@technotimlive" /> <script type="application/ld+json"> {"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-10-16T12:37:27-05:00","datePublished":"2026-10-16T08:00:00-05:00","description":"I keep most of my AI models on TrueNAS and access them over NFS from several Linux machines. Some of those models are well over 100 GiB, and I don’t really want to maintain a separate copy on every machine. That’s why I have a NAS in the first place.","headline":"Cache NFS Files Locally with Linux FS-Cache and CacheFiles","image":{"lqip":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAUACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP5xvhP8RfD/AMMz8MdCi+HPhrVNC1/VdGt/FCPZ6FNr+u29l4zkstTiHiPxP4b8XXGkjWrXTtZtJhpVraxWlp4gkitohNp9rcN/Q3H3AOZZjgswxGVcUSyaeUY/EUKC/sili1UpVcDTuqkqWOy+tOVOpL29CVSrUVOtGCcZ0OfD1P5+yHPZ0s4yGpHDr6vi6NPFZ5h3XqT/ALUjSWJw2Eo0JV1WpZXGlVmq2InhsPKWNpxVCpyTVPEU/hMQ6dIBJDp8UULjfFHKwmkjibmNJJljgWV0UhXlWGESMCwijB2D7XBYeEcHhI4ilha+IjhqCr1oYf2MK1ZUoKrVjRdWq6Uak+acabq1HBNRdSduZ8+IqVPrFf2VWtTpe2q+zpyqe0lCnzy5IOfLDncY2i58keZq/LG9l//Z","url":"https://images.technotim.com/assets/img/headers/nfs-fscache-cachefiles.webp","@type":"imageObject"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://technotim.com/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/"},"url":"https://technotim.com/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/"}</script><title>Cache NFS Files Locally with Linux FS-Cache and CacheFiles | Techno Tim</title><link rel="icon" type="image/png" href="/assets/img/favicons/favicon-96x96.png" sizes="96x96"><link rel="icon" type="image/svg+xml" href="/assets/img/favicons/favicon.svg"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com" ><link rel="dns-prefetch" href="https://fonts.googleapis.com" ><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://fonts.gstatic.com" ><link rel="preconnect" href="https://cdn.jsdelivr.net" ><link rel="dns-prefetch" href="https://cdn.jsdelivr.net" ><link rel="stylesheet" href="/assets/css/jekyll-theme-chirpy.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Source+Sans+Pro:wght@400;600;700;900&display=swap"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loading-attribute-polyfill@2/dist/loading-attribute-polyfill.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3/dist/css/glightbox.min.css"> <script src="/assets/js/dist/theme.min.js"></script> <script defer src="https://cdn.jsdelivr.net/combine/npm/simple-jekyll-search@1/dest/simple-jekyll-search.min.js,npm/loading-attribute-polyfill@2/dist/loading-attribute-polyfill.umd.min.js,npm/glightbox@3/dist/js/glightbox.min.js,npm/clipboard@2/dist/clipboard.min.js,npm/dayjs@1/dayjs.min.js,npm/dayjs@1/locale/en.js,npm/dayjs@1/plugin/relativeTime.js,npm/dayjs@1/plugin/localizedFormat.js,npm/tocbot@4/dist/tocbot.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id=G-NZ5V7DM8F5"></script> <script> document.addEventListener('DOMContentLoaded', () => { window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-NZ5V7DM8F5'); }); </script><body><aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end"><header class="profile-wrapper"> <a href="/" id="avatar" class="rounded-circle"><img src="https://avatars.githubusercontent.com/u/1322205?s=400&u=5b4f2219006577dc0426007fe5a02391c4899677&v=4" width="112" height="112" alt="avatar" onerror="this.style.display='none'"></a> <a class="site-title d-block" href="/">Techno Tim</a><p class="site-subtitle fst-italic mb-0">Engineer. Builder. Creator. From Code to Cloud</p></header><nav class="flex-column flex-grow-1 w-100 ps-0"><ul class="nav"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle"></i> <span>ABOUT</span> </a><li class="nav-item"> <a href="/shop/" class="nav-link"> <i class="fa-fw fas fa-bag-shopping"></i> <span>MERCH</span> </a><li class="nav-item"> <a href="/sponsor/" class="nav-link"> <i class="fa-fw fas fa-handshake"></i> <span>SPONSOR</span> </a></ul></nav><div class="sidebar-bottom d-flex flex-wrap align-items-center w-100"><div class="btn-group dropup"> <button type="button" class="btn btn-link nav-link" aria-label="Switch Mode" id="mode-toggle" data-bs-toggle="dropdown" ><i class="fa-regular fa-sun" data-theme-mode="light"></i><i class="fa-regular fa-moon" data-theme-mode="dark"></i><i class="fa-solid fa-display" data-theme-mode="system"></i></button><ul class="dropdown-menu rounded-3 mb-1 p-1"><li> <button class="dropdown-item d-flex align-items-center" type="button" data-theme-mode="light"><i class="fa-regular fa-sun" data-theme-mode="light"></i>Light</button><li> <button class="dropdown-item d-flex align-items-center" type="button" data-theme-mode="dark"><i class="fa-regular fa-moon" data-theme-mode="dark"></i>Dark</button><li> <button class="dropdown-item d-flex align-items-center" type="button" data-theme-mode="system"><i class="fa-solid fa-display" data-theme-mode="system"></i>System</button></ul></div><span class="icon-border"></span> <a href="https://l.technotim.com/links" aria-label="links" target="_blank" rel="noopener noreferrer" > <i class="fa-solid fa-link"></i> </a> <a href="https://twitter.com/technotimlive" aria-label="twitter" target="_blank" rel="noopener noreferrer" > <i class="fa-brands fa-x-twitter"></i> </a> <a href="https://l.technotim.com/github" aria-label="github-custom" target="_blank" rel="noopener noreferrer" > <i class="fab fa-github"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></aside><div id="main-wrapper" class="d-flex justify-content-center"><div class="container d-flex flex-column px-xxl-5"><header id="topbar-wrapper" class="flex-shrink-0" aria-label="Top Bar"><div id="topbar" class="d-flex align-items-center justify-content-between px-lg-3 h-100" ><nav id="breadcrumb" aria-label="Breadcrumb"> <span> <a href="/">Home</a> </span> <span>Cache NFS Files Locally with Linux FS-Cache and CacheFiles</span></nav><button type="button" id="sidebar-trigger" class="btn btn-link" aria-label="Sidebar"> <i class="fas fa-bars fa-fw"></i> </button><div id="topbar-title"> Post</div><button type="button" id="search-trigger" class="btn btn-link" aria-label="Search"> <i class="fas fa-search fa-fw"></i> </button> <search id="search" class="align-items-center ms-3 ms-lg-0"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..." > </search> <button type="button" class="btn btn-link text-decoration-none" id="search-cancel">Cancel</button></div></header><div class="row flex-grow-1"><main aria-label="Main Content" class="col-12 col-lg-11 col-xl-9 px-md-4"><article class="px-1" data-toc="true"><header><h1 data-toc-skip>Cache NFS Files Locally with Linux FS-Cache and CacheFiles</h1><div class="post-meta text-muted"> <span> Posted <time data-ts="1792155600" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Oct 16, 2026 </time> </span> <span> Updated <time data-ts="1792172247" data-df="ll" data-bs-toggle="tooltip" data-bs-placement="bottom" > Oct 16, 2026 </time> </span><div class="mt-3 mb-3"> <a href="https://images.technotim.com/assets/img/headers/nfs-fscache-cachefiles.webp" class="popup img-link preview-img blur"><img data-src="https://images.technotim.com/assets/img/headers/nfs-fscache-cachefiles.webp" alt="Preview Image" width="1200" height="630" data-lqip="true" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAUACgMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP5xvhP8RfD/AMMz8MdCi+HPhrVNC1/VdGt/FCPZ6FNr+u29l4zkstTiHiPxP4b8XXGkjWrXTtZtJhpVraxWlp4gkitohNp9rcN/Q3H3AOZZjgswxGVcUSyaeUY/EUKC/sili1UpVcDTuqkqWOy+tOVOpL29CVSrUVOtGCcZ0OfD1P5+yHPZ0s4yGpHDr6vi6NPFZ5h3XqT/ALUjSWJw2Eo0JV1WpZXGlVmq2InhsPKWNpxVCpyTVPEU/hMQ6dIBJDp8UULjfFHKwmkjibmNJJljgWV0UhXlWGESMCwijB2D7XBYeEcHhI4ilha+IjhqCr1oYf2MK1ZUoKrVjRdWq6Uak+acabq1HBNRdSduZ8+IqVPrFf2VWtTpe2q+zpyqe0lCnzy5IOfLDncY2i58keZq/LG9l//Z"></a></div><div class="d-flex justify-content-between"> <span> By <em> <a href="https://l.technotim.com/twitter">Techno Tim</a> </em> </span><div> <span class="readtime" data-bs-toggle="tooltip" data-bs-placement="bottom" title="4629 words" > <em>25 min</em> read</span></div></div></div></header><div id="toc-bar" class="d-flex align-items-center justify-content-between invisible"> <span class="label text-truncate">Cache NFS Files Locally with Linux FS-Cache and CacheFiles</span> <button type="button" class="toc-trigger btn me-1"> <i class="fa-solid fa-list-ul fa-fw"></i> </button></div><button id="toc-solo-trigger" type="button" class="toc-trigger btn btn-outline-secondary btn-sm"> <span class="label ps-2 pe-1">Contents</span> <i class="fa-solid fa-angle-right fa-fw"></i> </button> <dialog id="toc-popup" class="p-0"><div class="header d-flex flex-row align-items-center justify-content-between"><div class="label text-truncate py-2 ms-4">Cache NFS Files Locally with Linux FS-Cache and CacheFiles</div><button id="toc-popup-close" type="button" class="btn-close btn-sm mx-3" aria-label="Close"></button></div><div id="toc-popup-content" class="px-4 py-3 pb-4"></div></dialog><div class="content"><p>I keep most of my AI models on TrueNAS and access them over NFS from several Linux machines. Some of those models are well over 100 GiB, and I don’t really want to maintain a separate copy on every machine. That’s why I have a NAS in the first place.</p><p>The downside to keeping files centralized shows up whenever I reload a model. Even with a fast network, reading 155 GiB over NFS takes time. I wanted to find a way to speed up those reads while keeping my model library in one place.</p><p>While looking for ways to improve NFS read performance, I came across something in Linux that I somehow hadn’t heard of before. It’s called <strong>FS-Cache</strong>, and together with <strong>CacheFiles</strong>, it can cache NFS file data on a local SSD. The original files stay on the NAS, and applications continue using the same paths. When those files are read again, Linux can use the local cache instead of fetching the data over the network.</p><p>I tried it with a real DeepSeek model snapshot. The first test used a single 3.3 GiB weight shard. It took about <strong>4.5 seconds over NFS</strong>, then <strong>1.7 seconds</strong> once the SSD cache was warm. With the entire 155 GiB model, the first FS-Cache read took <strong>565 seconds</strong> (even over 10 gig it was slow!) while filling the local cache. The next read took <strong>93 seconds</strong>. That was roughly <strong>6.1 times faster</strong> for the full-model file read.</p><p>Those are file-read tests, not vLLM startup or inference times. I wanted to separate the time spent retrieving files from everything else that happens when a model server starts.</p><p><a href="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/nfs-fscache-model-library.webp" class="popup img-link blur"><img data-src="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/nfs-fscache-model-library.webp" alt="TrueNAS model library shared with several Linux clients" data-lqip="true" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACrSURBVDXB3UoDMRCA0W8yk1YWQ1uLLKX+gO//Pl54oSDuhV5UlC5rks1IlZ4ju9sHTylhZuScCSFw4u4Mw8CZjeNILgVvToyKBsVxcs4gwh93rNZKrZV/C677FQsTXt4+wJ0zEzXicklUgbnwfTzS3DEVLF1SZqf8TARRo+vv0O0Nkxsl7ZhXeyY37GpP198jGrGWJz6fHxERNps1fL3j3lh3Fxxen2itcfILh1pKjDeEHIkAAAAASUVORK5CYII="></a></p><p><em>One model library on TrueNAS, shared across several Linux machines without maintaining separate copies.</em></p><iframe class="embed-video" loading="lazy" src="https://www.youtube.com/embed/KVNAp7MAApc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe><p>📺 <a href="https://youtu.be/KVNAp7MAApc">Watch Video</a></p><h2 id="how-this-works"><span class="me-2">How this works</span><a href="#how-this-works" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>NFS makes files stored on another machine available under a normal directory. In my setup the share is mounted at <code class="language-plaintext highlighter-rouge">/mnt/llm</code>, so an application doesn’t need to know whether a file lives on TrueNAS or a local disk.</p><p>FS-Cache is the caching framework in the Linux kernel. CacheFiles provides the local disk-backed storage, and <code class="language-plaintext highlighter-rouge">cachefilesd</code> registers that storage with the kernel and handles cache maintenance, including clearing older entries when space runs low.</p><p>On the first read, Linux fetches file data over NFS and can store it on the SSD. On later reads, it can use the local copy as long as the NFS client considers that cached data valid. TrueNAS remains the source of truth. There’s no script copying files back and forth, and each Linux machine caches only the data it actually reads.</p><p><a href="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/how-a-read-gets-cached.webp" class="popup img-link blur"><img data-src="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/how-a-read-gets-cached.webp" alt="How a read gets cached with FS-Cache and CacheFiles" data-lqip="true" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACxSURBVBXBuVLDMBRA0etFshTHJDQMBTOUdPz/B5E2g7Eja3t6TM7pPr++1TnHPM/klLDW8nO7UarQRMgl8zR63Qjryt9dScsb+b7CMGEuli4dTOpRaYwyeIytVHvlJJGrVbbxTMkFmxrVevCGMcTCHhJqfhl7ZY0H7sPQYuQRAu480DTTh5iZ/AnTKVIrzs+4DIiyLC8svWeIwii1ILXw1L2+gzaOCENn2MPGI+y0JvwDfFZjACL7J0UAAAAASUVORK5CYII="></a></p><p><em>The first read retrieves data from TrueNAS and stores a local copy. Later reads can use the SSD instead.</em></p><h2 id="what-im-testing"><span class="me-2">What I’m testing</span><a href="#what-im-testing" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>I used a fresh Ubuntu test client with an NFSv4.2 mount and an <strong>ext4 filesystem on local SSD storage</strong>. The DeepSeek snapshot had <strong>74 regular files totaling about 155.44 GiB</strong>, including its weight shards. The demonstration uses a temporary <strong>256 GiB ext4 cache</strong> so it doesn’t interfere with my permanent setup.</p><p>There are two tests. I’ll start with one <code class="language-plaintext highlighter-rouge">.safetensors</code> shard, reading it over NFS before caching is enabled and again after warming the local cache. Then I’ll clear that disk cache and read the entire model twice. The single-file test takes seconds. The full-model test shows what changes when we’re reading about 155 GiB across 74 files.</p><p>You’ll need an Ubuntu client, a working NFS export containing files you can read, and at least <strong>300 GiB free under <code class="language-plaintext highlighter-rouge">/var/cache</code></strong> for this particular demo. The 256 GiB cache image is fully allocated, so it uses real disk space. You can size the cache differently for your own workload, but the commands below use 256 GiB to match my test. The backing filesystem must support CacheFiles. I’m using ext4 here.</p><blockquote class="prompt-info"><p><em>Info: Change these values for your environment. Replace the NAS IP and export in the mount commands, and update <code class="language-plaintext highlighter-rouge">/mnt/llm</code> everywhere if you want to use a different client-side mount point. The <code class="language-plaintext highlighter-rouge">MODEL</code> and <code class="language-plaintext highlighter-rouge">ONE_FILE</code> variables later in the guide must point to files that exist under that mount. The temporary cache uses <code class="language-plaintext highlighter-rouge">/var/cache/fscache-demo.img</code>, <code class="language-plaintext highlighter-rouge">/var/cache/fscache-demo</code>, and a 256 GiB image. Change those values together if you want to store the cache somewhere else or use a different size. The reset and cleanup commands include safety checks for these paths, so update those checks too. The NFS options, including <code class="language-plaintext highlighter-rouge">vers=4.2</code>, <code class="language-plaintext highlighter-rouge">nconnect=4</code>, <code class="language-plaintext highlighter-rouge">rsize</code>, and <code class="language-plaintext highlighter-rouge">wsize</code>, are the settings from my test and may need to match your NFS server and client.</em></p></blockquote><blockquote class="prompt-warning"><p><em>Warning: Use a disposable or idle test machine for this. The test clears the Linux RAM page cache for the entire client, and later steps create and delete a 256 GiB local disk image. Don’t run this over an existing CacheFiles installation or a cache volume containing data you want to keep. Use a separate test machine rather than changing an existing CacheFiles setup.</em></p></blockquote><h2 id="mount-the-nfs-share-without-caching"><span class="me-2">Mount the NFS share without caching</span><a href="#mount-the-nfs-share-without-caching" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>First install the NFS client and CacheFiles tools. The <code class="language-plaintext highlighter-rouge">modprobe</code> command loads the CacheFiles kernel module, but doesn’t enable caching by itself. I also want to check the filesystem behind <code class="language-plaintext highlighter-rouge">/var/cache</code> before doing anything with disk space.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre><span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> nfs-common cachefilesd <span class="nb">time </span>e2fsprogs
+<span class="nb">sudo </span>modprobe cachefiles
+
+<span class="nb">df</span> <span class="nt">-h</span> /var/cache
+findmnt <span class="nt">-T</span> /var/cache <span class="nt">-o</span> TARGET,SOURCE,FSTYPE
+</pre></table></code></div></div><p>For this demo, the share is read-only. That way nothing in these tests can change the model files on the NAS. I keep the NFS options the same for each run, with only the FS-Cache option changing later. The hostname isn’t needed, so I’ll enter the NAS IP.</p><p>The export and model paths are from my setup. Change them to match yours if the files are somewhere else.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="nb">printf</span> <span class="s1">'TrueNAS IPv4 address: '</span>
+<span class="nb">read</span> <span class="nt">-r</span> NAS_IP
+<span class="nb">printf</span> <span class="s1">'\n'</span>
+
+<span class="nb">sudo mkdir</span> <span class="nt">-p</span> /mnt/llm
+<span class="nb">sudo </span>mount <span class="nt">-t</span> nfs4 <span class="se">\</span>
+  <span class="nt">-o</span> ro,hard,vers<span class="o">=</span>4.2,proto<span class="o">=</span>tcp,rsize<span class="o">=</span>1048576,wsize<span class="o">=</span>1048576,nconnect<span class="o">=</span>4,timeo<span class="o">=</span>600,retrans<span class="o">=</span>5,sec<span class="o">=</span>sys <span class="se">\</span>
+  <span class="s2">"</span><span class="k">${</span><span class="nv">NAS_IP</span><span class="k">}</span><span class="s2">:/mnt/storage0/services/llm"</span> /mnt/llm
+findmnt <span class="nt">-M</span> /mnt/llm <span class="nt">-o</span> TARGET,FSTYPE,OPTIONS
+</pre></table></code></div></div><p>The mount uses NFSv4.2 and <code class="language-plaintext highlighter-rouge">nconnect=4</code>, which allows multiple TCP connections to the server. <code class="language-plaintext highlighter-rouge">rsize</code> and <code class="language-plaintext highlighter-rouge">wsize</code> set the maximum request sizes to 1 MiB. <code class="language-plaintext highlighter-rouge">ro</code> makes the export read-only for this test. At this point the mount should have <strong>no <code class="language-plaintext highlighter-rouge">fsc</code> option</strong>.</p><h2 id="read-one-model-file-over-nfs"><span class="me-2">Read one model file over NFS</span><a href="#read-one-model-file-over-nfs" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Before setting up the SSD cache, I want a baseline. I’ll choose one actual DeepSeek weight shard, about 3.32 GiB in my test, and read it straight from the NAS. The helper also builds a list of every file in the snapshot, ready for the full-model test later.</p><p>Hugging Face model snapshots commonly use symlinks into their blob store. <code class="language-plaintext highlighter-rouge">find -L</code> follows those links so we’re measuring the real data files, not just the symlinks. The file list is sorted so both full-model runs read the same files in the same order.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre><td class="rouge-code"><pre><span class="nv">MODEL</span><span class="o">=</span>/mnt/llm/models/huggingface/deepseek-ai/DeepSeek-V4-Flash-0731
+<span class="nv">MODEL_FILES</span><span class="o">=()</span>
+<span class="k">while </span><span class="nv">IFS</span><span class="o">=</span> <span class="nb">read</span> <span class="nt">-r</span> file<span class="p">;</span> <span class="k">do
+  </span>MODEL_FILES+<span class="o">=(</span><span class="s2">"</span><span class="nv">$file</span><span class="s2">"</span><span class="o">)</span>
+<span class="k">done</span> &lt; &lt;<span class="o">(</span>find <span class="nt">-L</span> <span class="s2">"</span><span class="nv">$MODEL</span><span class="s2">"</span> <span class="nt">-type</span> f | <span class="nb">sort</span><span class="o">)</span>
+
+<span class="c"># Prefer the shard used in the benchmark when the snapshot contains it.</span>
+<span class="nv">ONE_FILE</span><span class="o">=</span><span class="s2">"</span><span class="nv">$MODEL</span><span class="s2">/model-00025-of-00048.safetensors"</span>
+<span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-r</span> <span class="s2">"</span><span class="nv">$ONE_FILE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nv">ONE_FILE</span><span class="o">=</span><span class="si">$(</span>find <span class="nt">-L</span> <span class="s2">"</span><span class="nv">$MODEL</span><span class="s2">"</span> <span class="nt">-type</span> f <span class="nt">-name</span> <span class="s1">'*.safetensors'</span> <span class="nt">-print</span> <span class="nt">-quit</span><span class="si">)</span>
+<span class="k">fi
+if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$ONE_FILE</span><span class="s2">"</span> <span class="o">]</span> <span class="o">||</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-r</span> <span class="s2">"</span><span class="nv">$ONE_FILE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s1">'No readable model shard found.'</span>
+<span class="k">else
+  </span><span class="nb">stat</span> <span class="nt">-Lc</span> <span class="s1">'Single shard: %n (%s bytes)'</span> <span class="s2">"</span><span class="nv">$ONE_FILE</span><span class="s2">"</span>
+<span class="k">fi
+
+</span><span class="nb">printf</span> <span class="s1">'Full model files: %s\n'</span> <span class="s2">"</span><span class="k">${#</span><span class="nv">MODEL_FILES</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span>
+find <span class="nt">-L</span> <span class="s2">"</span><span class="nv">$MODEL</span><span class="s2">"</span> <span class="nt">-type</span> f <span class="nt">-printf</span> <span class="s1">'%s\n'</span> | <span class="se">\</span>
+  <span class="nb">awk</span> <span class="s1">'{ files++; bytes += $1 } END { printf "Total: %d files, %.2f GiB\n", files, bytes / 1073741824 }'</span>
+</pre></table></code></div></div><p>Next is the read helper. It accepts either <code class="language-plaintext highlighter-rouge">shard</code> or <code class="language-plaintext highlighter-rouge">full</code>, so I don’t have to change the file list between tests. That’s useful because I originally managed to restore the full list without noticing and ended up reading all 74 files when I thought I was testing one.</p><p>I’m using <code class="language-plaintext highlighter-rouge">dd</code> to read each file and discard the bytes into <code class="language-plaintext highlighter-rouge">/dev/null</code>. This doesn’t copy anything to a new file or load the model into a GPU. It measures the file-reading part of the workload. The helper prints the number of completed files, elapsed time, NFS READ data, and NFS READ requests.</p><p>Before each read, <code class="language-plaintext highlighter-rouge">sync</code> flushes pending writes and the <code class="language-plaintext highlighter-rouge">drop_caches</code> command clears Linux’s normal <strong>RAM page cache</strong>. It does <strong>not</strong> clear the SSD cache managed by CacheFiles. Without this, a second read could look fast simply because the data was still in RAM. The NFS counters come from <code class="language-plaintext highlighter-rouge">/proc/self/mountstats</code>, so we can also check whether a warm read really avoided network file-data transfers.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+</pre><td class="rouge-code"><pre>nfs_counters<span class="o">()</span> <span class="o">{</span>
+  <span class="nb">awk</span> <span class="nt">-v</span> <span class="nv">mp</span><span class="o">=</span>/mnt/llm <span class="s1">'
+    /^device / { active = index($0, " mounted on " mp " with fstype nfs") &gt; 0 }
+    active &amp;&amp; $1 == "bytes:" { server_bytes = $6 }
+    active &amp;&amp; $1 == "READ:" { requests = $2 }
+    END {
+      if (server_bytes == "" || requests == "") exit 1
+      printf "%.0f %.0f\n", requests, server_bytes
+    }
+  '</span> /proc/self/mountstats
+<span class="o">}</span>
+
+read_model<span class="o">()</span> <span class="o">{</span>
+  <span class="nb">local </span>file before_requests before_bytes after_requests after_bytes start end
+  <span class="nb">local </span><span class="nv">finished</span><span class="o">=</span>0 total
+  <span class="nb">local</span> <span class="nt">-a</span> <span class="nv">files</span><span class="o">=()</span>
+
+  <span class="k">case</span> <span class="s2">"</span><span class="k">${</span><span class="nv">1</span><span class="k">:-}</span><span class="s2">"</span> <span class="k">in
+    </span>shard<span class="p">)</span>
+      <span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="k">${</span><span class="nv">ONE_FILE</span><span class="k">:-}</span><span class="s2">"</span> <span class="o">]</span> <span class="o">||</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-r</span> <span class="s2">"</span><span class="nv">$ONE_FILE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s1">'No readable shard selected.'</span>
+        <span class="k">return </span>1
+      <span class="k">fi
+      </span><span class="nv">files</span><span class="o">=(</span><span class="s2">"</span><span class="nv">$ONE_FILE</span><span class="s2">"</span><span class="o">)</span>
+      <span class="p">;;</span>
+    full<span class="p">)</span>
+      <span class="nv">files</span><span class="o">=(</span><span class="s2">"</span><span class="k">${</span><span class="nv">MODEL_FILES</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="o">)</span>
+      <span class="p">;;</span>
+    <span class="k">*</span><span class="p">)</span>
+      <span class="nb">echo</span> <span class="s1">'Usage: read_model shard | read_model full'</span>
+      <span class="k">return </span>2
+      <span class="p">;;</span>
+  <span class="k">esac</span>
+
+  <span class="nv">total</span><span class="o">=</span><span class="k">${#</span><span class="nv">files</span><span class="p">[@]</span><span class="k">}</span>
+  <span class="k">if</span> <span class="o">((</span> total <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s1">'No model files found. Check the model path.'</span>
+    <span class="k">return </span>1
+  <span class="k">fi
+
+  </span><span class="nb">sync
+  sudo </span>sh <span class="nt">-c</span> <span class="s1">'echo 1 &gt; /proc/sys/vm/drop_caches'</span> <span class="o">||</span> <span class="k">return </span>1
+  <span class="nb">read</span> <span class="nt">-r</span> before_requests before_bytes &lt; &lt;<span class="o">(</span>nfs_counters<span class="o">)</span> <span class="o">||</span> <span class="k">return </span>1
+  <span class="nv">start</span><span class="o">=</span><span class="si">$(</span><span class="nb">date</span> +%s%N<span class="si">)</span>
+
+  <span class="nb">printf</span> <span class="s1">'Files read: %d/%d'</span> <span class="s2">"</span><span class="nv">$finished</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$total</span><span class="s2">"</span>
+  <span class="k">for </span>file <span class="k">in</span> <span class="s2">"</span><span class="k">${</span><span class="nv">files</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="p">;</span> <span class="k">do
+    </span><span class="nb">dd </span><span class="k">if</span><span class="o">=</span><span class="s2">"</span><span class="nv">$file</span><span class="s2">"</span> <span class="nv">of</span><span class="o">=</span>/dev/null <span class="nv">bs</span><span class="o">=</span>4M <span class="nv">status</span><span class="o">=</span>none <span class="o">||</span> <span class="o">{</span> <span class="nb">printf</span> <span class="s1">'\n'</span><span class="p">;</span> <span class="k">return </span>1<span class="p">;</span> <span class="o">}</span>
+    <span class="nv">finished</span><span class="o">=</span><span class="k">$((</span>finished <span class="o">+</span> <span class="m">1</span><span class="k">))</span>
+    <span class="nb">printf</span> <span class="s1">'\rFiles read: %d/%d'</span> <span class="s2">"</span><span class="nv">$finished</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$total</span><span class="s2">"</span>
+  <span class="k">done
+  </span><span class="nb">printf</span> <span class="s1">'\n'</span>
+
+  <span class="nv">end</span><span class="o">=</span><span class="si">$(</span><span class="nb">date</span> +%s%N<span class="si">)</span>
+  <span class="nb">read</span> <span class="nt">-r</span> after_requests after_bytes &lt; &lt;<span class="o">(</span>nfs_counters<span class="o">)</span> <span class="o">||</span> <span class="k">return </span>1
+  <span class="nb">awk</span> <span class="nt">-v</span> <span class="nv">ns</span><span class="o">=</span><span class="s2">"</span><span class="k">$((</span>end <span class="o">-</span> start<span class="k">))</span><span class="s2">"</span> <span class="nt">-v</span> <span class="nv">bytes</span><span class="o">=</span><span class="s2">"</span><span class="k">$((</span>after_bytes <span class="o">-</span> before_bytes<span class="k">))</span><span class="s2">"</span> <span class="s1">'
+    BEGIN {
+      printf "Read time: %.2f seconds\n", ns / 1000000000
+      printf "NFS READ data: %.2f GiB\n", bytes / 1073741824
+    }
+  '</span>
+  <span class="nb">printf</span> <span class="s1">'NFS READ RPCs: %s\n'</span> <span class="s2">"</span><span class="k">$((</span>after_requests <span class="o">-</span> before_requests<span class="k">))</span><span class="s2">"</span>
+<span class="o">}</span>
+</pre></table></code></div></div><p>Now read the shard while the mount still has no FS-Cache enabled.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="nb">printf</span> <span class="s1">'\nOne shard: NFS direct (no FS-Cache)\n'</span>
+read_model shard
+</pre></table></code></div></div><p>The selected <code class="language-plaintext highlighter-rouge">model-00025-of-00048.safetensors</code> shard is about 3.3 GiB. Reading it directly over NFS took <strong>about 4.5 seconds</strong>. That’s not a long time for one file, but the same wait adds up when the model has dozens of files to read.</p><h2 id="give-cachefiles-256-gib-of-local-storage"><span class="me-2">Give CacheFiles 256 GiB of local storage</span><a href="#give-cachefiles-256-gib-of-local-storage" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>The next piece is somewhere to store cached data. I don’t want this test to keep expanding into all the free space on the SSD, so I’m putting a <strong>256 GiB ext4 filesystem inside a preallocated image file</strong>.</p><p>That gives the cache its own filesystem, without repartitioning the drive. <code class="language-plaintext highlighter-rouge">fallocate</code> reserves the space up front, <code class="language-plaintext highlighter-rouge">mkfs.ext4</code> formats the new image, and <code class="language-plaintext highlighter-rouge">mount -o loop</code> mounts it at <code class="language-plaintext highlighter-rouge">/var/cache/fscache-demo</code>. The guard checks refuse to overwrite an existing image or mount.</p><p>The command below creates and formats <strong>only <code class="language-plaintext highlighter-rouge">/var/cache/fscache-demo.img</code></strong>. It checks that <code class="language-plaintext highlighter-rouge">/var/cache</code> is on ext4 and has at least 300 GiB free before starting. This is a demo-specific storage choice, not a requirement that everyone use a loopback image.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre><td class="rouge-code"><pre><span class="nb">sudo </span>bash <span class="nt">-e</span> <span class="o">&lt;&lt;</span><span class="sh">'</span><span class="no">EOF</span><span class="sh">'
+IMAGE=/var/cache/fscache-demo.img
+CACHE=/var/cache/fscache-demo
+
+# Use a fresh local ext4 filesystem with room for the image and host headroom.
+if [ "</span><span class="si">$(</span>findmnt <span class="nt">-T</span> /var/cache <span class="nt">-n</span> <span class="nt">-o</span> FSTYPE<span class="si">)</span><span class="sh">" != ext4 ]; then
+  echo 'Expected local ext4 under /var/cache. Aborting.'
+  exit 1
+fi
+available=</span><span class="si">$(</span><span class="nb">df</span> <span class="nt">-B1</span> <span class="nt">--output</span><span class="o">=</span>avail /var/cache | <span class="nb">tail</span> <span class="nt">-n</span> 1 | <span class="nb">tr</span> <span class="nt">-d</span> <span class="s1">'[:space:]'</span><span class="si">)</span><span class="sh">
+required=</span><span class="k">$((</span><span class="m">300</span> <span class="o">*</span> <span class="m">1024</span> <span class="o">*</span> <span class="m">1024</span> <span class="o">*</span> <span class="m">1024</span><span class="k">))</span><span class="sh">
+if [ "</span><span class="nv">$available</span><span class="sh">" -lt "</span><span class="nv">$required</span><span class="sh">" ]; then
+  echo 'Need at least 300 GiB free before creating the 256 GiB cache.'
+  exit 1
+fi
+if [ -e "</span><span class="nv">$IMAGE</span><span class="sh">" ] || mountpoint -q "</span><span class="nv">$CACHE</span><span class="sh">"; then
+  echo 'Demo cache image or mount already exists. Aborting.'
+  exit 1
+fi
+if [ -d "</span><span class="nv">$CACHE</span><span class="sh">" ] &amp;&amp; [ -n "</span><span class="si">$(</span><span class="nb">ls</span> <span class="nt">-A</span> <span class="s2">"</span><span class="nv">$CACHE</span><span class="s2">"</span><span class="si">)</span><span class="sh">" ]; then
+  echo 'Demo cache directory is not empty. Aborting.'
+  exit 1
+fi
+if pgrep -x cachefilesd &gt;/dev/null; then
+  echo 'A CacheFiles daemon is already running. Use a fresh client.'
+  exit 1
+fi
+
+install -d -m 0700 "</span><span class="nv">$CACHE</span><span class="sh">"
+fallocate -l 256G "</span><span class="nv">$IMAGE</span><span class="sh">"
+mkfs.ext4 -F -m 0 -E nodiscard "</span><span class="nv">$IMAGE</span><span class="sh">" &gt;/dev/null
+mount -o loop "</span><span class="nv">$IMAGE</span><span class="sh">" "</span><span class="nv">$CACHE</span><span class="sh">"
+chmod 0700 "</span><span class="nv">$CACHE</span><span class="sh">"
+
+findmnt -M "</span><span class="nv">$CACHE</span><span class="sh">" -o TARGET,SOURCE,FSTYPE,OPTIONS
+df -h "</span><span class="nv">$CACHE</span><span class="sh">"
+du -h "</span><span class="nv">$IMAGE</span><span class="sh">"
+</span><span class="no">EOF
+</span></pre></table></code></div></div><p>Once mounted, <code class="language-plaintext highlighter-rouge">df -h /var/cache/fscache-demo</code> shows the dedicated ext4 filesystem. The image reserves 256 GiB on the host, but the formatted filesystem shows <strong>about 251 GiB</strong> available because ext4 has its own overhead. <code class="language-plaintext highlighter-rouge">du -h /var/cache/fscache-demo.img</code> shows the space allocated on the host disk.</p><h2 id="configure-cachefiles-culling-and-lru"><span class="me-2">Configure CacheFiles, culling, and LRU</span><a href="#configure-cachefiles-culling-and-lru" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Now I’ll tell CacheFiles where that storage is and when it should make room. This is a small configuration file, but the settings are worth understanding rather than just pasting them in.</p><p><code class="language-plaintext highlighter-rouge">dir</code> points to the cache directory we just mounted, and <code class="language-plaintext highlighter-rouge">tag</code> gives the cache a name. The other settings are percentages of <strong>free space</strong> or <strong>available file entries</strong> on that cache filesystem.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre><td class="rouge-code"><pre><span class="nb">sudo tee</span> /etc/cachefilesd-demo.conf <span class="o">&gt;</span>/dev/null <span class="o">&lt;&lt;</span><span class="sh">'</span><span class="no">CONFIG</span><span class="sh">'
+# Where cached NFS data lives, and the name of this cache.
+dir /var/cache/fscache-demo
+tag llm-demo
+
+# Free disk space: stop clearing at 25%, start at 10%, pause new allocations at 3%.
+brun 25%
+bcull 10%
+bstop 3%
+
+# Free file entries: the same protections for the number of cache files.
+frun 10%
+fcull 7%
+fstop 3%
+</span><span class="no">CONFIG
+
+</span><span class="nb">cat</span> /etc/cachefilesd-demo.conf
+</pre></table></code></div></div><p>The <code class="language-plaintext highlighter-rouge">b</code> settings are about free disk <strong>blocks</strong>. With this configuration, CacheFiles starts <em>culling</em> when free space falls below <strong>10%</strong> (<code class="language-plaintext highlighter-rouge">bcull</code>). Culling simply means deleting old <strong>cached copies</strong> to make room for new data. It keeps going until free space recovers above <strong>25%</strong> (<code class="language-plaintext highlighter-rouge">brun</code>). If it gets down to <strong>3%</strong> (<code class="language-plaintext highlighter-rouge">bstop</code>), it stops new cache allocations until there’s room again. Reads can still fall back to the NAS.</p><p>The <code class="language-plaintext highlighter-rouge">f</code> settings do the same thing for available <strong>file entries</strong>, or inodes. They’re useful when there are lots of small cached files. My thresholds are 7% to begin culling, 10% to stop, and 3% to pause new allocations.</p><p>CacheFiles prefers entries that haven’t been accessed recently when it needs space. That’s <strong>LRU</strong>, short for <em>least recently used</em>. It doesn’t delete everything after a fixed number of hours or days. Older cached copies are candidates for removal as the cache fills up, and the original files on the NAS are never deleted by this process. There isn’t a separate <code class="language-plaintext highlighter-rouge">lru</code> switch to turn on.</p><p>With my 155 GiB model and a 256 GiB cache, there should be enough room for the whole snapshot. We shouldn’t trigger space-based culling during this particular test. The settings are there for when the cache eventually fills with other files.</p><p>For more detail, the <a href="https://docs.kernel.org/filesystems/caching/cachefiles.html">CacheFiles kernel documentation</a> covers its configuration and how culling works.</p><p><a href="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/cachefiles-lru-culling.webp" class="popup img-link blur"><img data-src="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/cachefiles-lru-culling.webp" alt="CacheFiles LRU-style cache eviction" data-lqip="true" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACVSURBVD3BPW6DUBBG0Ts/GEeCwnWKNNn/slhAhIJs5s2X0Pgc+/z61rIsdDfhjiSEuEiwbRuX3PcdLyGJY5xgvCmd/Jip44mbIONGj8bzxmijfGLkncaY1hWLwA2j3DjVeCQRgXng04xqQIOZka9xUvsPRz2ZaDKTMGEUraZev3QVyb+anMf64NLdmBluIuY7YwxO4A+qfUxCvFkU3AAAAABJRU5ErkJggg=="></a></p><p><em>CacheFiles prefers to remove less recently used data when it needs space. Original files remain on TrueNAS.</em></p><h2 id="start-the-cache-service"><span class="me-2">Start the cache service</span><a href="#start-the-cache-service" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>The configuration file doesn’t do anything until <code class="language-plaintext highlighter-rouge">cachefilesd</code> starts and registers the disk cache with the kernel. I’m starting it as a <strong>temporary systemd service</strong> rather than changing the machine’s permanent service setup. The command checks that another daemon isn’t already running, then verifies the cache is registered.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="k">if </span>pgrep <span class="nt">-x</span> cachefilesd <span class="o">&gt;</span>/dev/null<span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s1">'Another cachefilesd is running. Use a clean client.'</span>
+<span class="k">else
+  </span><span class="nb">sudo </span>systemd-run <span class="nt">--unit</span><span class="o">=</span>fscache-demo <span class="nt">--property</span><span class="o">=</span><span class="nv">Type</span><span class="o">=</span><span class="nb">exec</span> <span class="nt">--collect</span> <span class="se">\</span>
+    /sbin/cachefilesd <span class="nt">-n</span> <span class="nt">-s</span> <span class="nt">-f</span> /etc/cachefilesd-demo.conf
+  systemctl is-active fscache-demo.service
+  <span class="nb">cat</span> /proc/fs/fscache/caches
+  <span class="nb">df</span> <span class="nt">-h</span> /var/cache/fscache-demo
+<span class="k">fi</span>
+</pre></table></code></div></div><p>You should see <code class="language-plaintext highlighter-rouge">fscache-demo.service</code> active and <code class="language-plaintext highlighter-rouge">llm-demo</code> listed in <code class="language-plaintext highlighter-rouge">/proc/fs/fscache/caches</code>. That tells us the local cache is available. It still won’t be used by NFS until we enable caching on the mount.</p><h2 id="enable-fs-cache-on-nfs"><span class="me-2">Enable FS-Cache on NFS</span><a href="#enable-fs-cache-on-nfs" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>This is the one change to the NFS mount that tells Linux to use its local disk cache. I’ll unmount the share, then mount it again with <strong><code class="language-plaintext highlighter-rouge">fsc</code></strong> in the options. Applications still read the same path under <code class="language-plaintext highlighter-rouge">/mnt/llm</code>.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre><span class="nb">cd</span> /
+<span class="nb">sudo </span>umount /mnt/llm
+<span class="nb">sudo </span>mount <span class="nt">-t</span> nfs4 <span class="se">\</span>
+  <span class="nt">-o</span> ro,hard,vers<span class="o">=</span>4.2,proto<span class="o">=</span>tcp,rsize<span class="o">=</span>1048576,wsize<span class="o">=</span>1048576,nconnect<span class="o">=</span>4,timeo<span class="o">=</span>600,retrans<span class="o">=</span>5,sec<span class="o">=</span>sys,fsc <span class="se">\</span>
+  <span class="s2">"</span><span class="k">${</span><span class="nv">NAS_IP</span><span class="k">}</span><span class="s2">:/mnt/storage0/services/llm"</span> /mnt/llm
+findmnt <span class="nt">-M</span> /mnt/llm <span class="nt">-n</span> <span class="nt">-o</span> OPTIONS | <span class="nb">tr</span> <span class="s1">','</span> <span class="s1">'\n'</span> | <span class="nb">grep</span> <span class="nt">-x</span> fsc
+</pre></table></code></div></div><p>The last command should print <code class="language-plaintext highlighter-rouge">fsc</code>. If the unmount is busy, stop whatever is using <code class="language-plaintext highlighter-rouge">/mnt/llm</code> before retrying rather than forcing it.</p><p>Now read the <strong>same shard</strong> twice. The first pass is cold for FS-Cache. Linux reads the file from TrueNAS and can store it on the SSD as it goes. The second pass clears RAM again but leaves the SSD cache in place.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="nb">printf</span> <span class="s1">'\nOne shard: FS-Cache cold\n'</span>
+read_model shard
+
+<span class="nb">printf</span> <span class="s1">'\nOne shard: FS-Cache warm\n'</span>
+read_model shard
+</pre></table></code></div></div><p>On the warm pass you should see <strong>zero NFS READ requests</strong> if that shard was fully cached and still valid. The client can still contact TrueNAS for metadata checks, but the file data doesn’t need to cross the network again.</p><p>The <strong>first FS-Cache read also took about 4.5 seconds</strong> because Linux still had to retrieve the file over NFS. After it had cached the shard, the same read dropped to <strong>1.7 seconds</strong>. That’s roughly two and a half times faster using the rounded timings from the test.</p><p>The timer is useful, but don’t rely on it alone to prove the cache is working. The helper also reports NFS READ data and request counts. On a successful warm read, those counters should stay at or near zero, even though NFS might still contact the server for metadata validation.</p><p><a href="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/nfs-fscache-single-shard.webp" class="popup img-link blur"><img data-src="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/nfs-fscache-single-shard.webp" alt="Single model shard cold versus warm FS-Cache results" data-lqip="true" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACkSURBVE3B0UoCQRSA4X/OHNvcNGI1CgnC93+j8EJCSS+GVXGS9szM5l5IfZ97fVv2dV0j4hAn5FIIIWBm/KeX74h1P/zpKV5Qf89NSYZ6VR6mjyyen/Be+Fh/4RHm7wvqasz2c4OdTwhXVjwmE0wmiHMM8uFClUCsMNCcEl1sWa9aEGE0e0HvxoT9hhB2DEoyNOVCyh2Dpmno4wmNR6qR0sYzN790F0cpZ2qVswAAAABJRU5ErkJggg=="></a></p><p><em>Reading the same 3.3 GiB model shard dropped from about 4.5 seconds to 1.7 seconds once cached locally, roughly 2.6 times faster.</em></p><h2 id="clear-the-ssd-cache-before-testing-the-entire-model"><span class="me-2">Clear the SSD cache before testing the entire model</span><a href="#clear-the-ssd-cache-before-testing-the-entire-model" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Now I’ll move from one file to the full model. But that shard is already on the SSD. If I started the full-model test immediately, its first run wouldn’t be completely cold.</p><p>The read helper clears <strong>RAM</strong> between passes. For a fresh disk-cache test, we need to unmount NFS, stop the CacheFiles daemon, clear the temporary cache contents, restart the daemon, and remount NFS with <code class="language-plaintext highlighter-rouge">fsc</code>. The 256 GiB image and its configuration stay in place, so there’s no reason to allocate it all over again.</p><p>This block only belongs on the disposable demo client. It checks the NFS export and the loop-mounted ext4 cache before deleting cache objects. It deliberately leaves <code class="language-plaintext highlighter-rouge">lost+found</code> alone. If any check fails, it stops instead of deleting unknown files.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+</pre><td class="rouge-code"><pre><span class="nb">cd</span> /  <span class="c"># Leave the NFS mount in this terminal, too.</span>
+<span class="nb">sudo </span>bash <span class="nt">-e</span> <span class="o">&lt;&lt;</span><span class="sh">'</span><span class="no">EOF</span><span class="sh">'
+cd /
+IMAGE=/var/cache/fscache-demo.img
+CACHE=/var/cache/fscache-demo
+
+# Remember the existing NFS source.
+NFS_SOURCE=</span><span class="si">$(</span>findmnt <span class="nt">-M</span> /mnt/llm <span class="nt">-n</span> <span class="nt">-o</span> SOURCE<span class="si">)</span><span class="sh">
+NFS_TYPE=</span><span class="si">$(</span>findmnt <span class="nt">-M</span> /mnt/llm <span class="nt">-n</span> <span class="nt">-o</span> FSTYPE<span class="si">)</span><span class="sh">
+if [ "</span><span class="nv">$NFS_TYPE</span><span class="sh">" != nfs4 ]; then
+  echo 'Expected an NFSv4 mount at /mnt/llm. Aborting.'
+  exit 1
+fi
+case "</span><span class="nv">$NFS_SOURCE</span><span class="sh">" in
+  *:/mnt/storage0/services/llm) ;;
+  *) echo 'Unexpected NFS export. Aborting.'; exit 1 ;;
+esac
+
+# Stop all users of the cache before deleting its contents.
+umount /mnt/llm
+systemctl stop fscache-demo.service
+if pgrep -x cachefilesd &gt;/dev/null; then
+  echo 'CacheFiles is still running. Aborting.'
+  exit 1
+fi
+
+# Confirm this is the demo's loop-backed ext4 filesystem.
+cache_device=</span><span class="si">$(</span>findmnt <span class="nt">-M</span> <span class="s2">"</span><span class="nv">$CACHE</span><span class="s2">"</span> <span class="nt">-n</span> <span class="nt">-o</span> SOURCE<span class="si">)</span><span class="sh">
+cache_fs=</span><span class="si">$(</span>findmnt <span class="nt">-M</span> <span class="s2">"</span><span class="nv">$CACHE</span><span class="s2">"</span> <span class="nt">-n</span> <span class="nt">-o</span> FSTYPE<span class="si">)</span><span class="sh">
+loop_device=</span><span class="si">$(</span>losetup <span class="nt">-j</span> <span class="s2">"</span><span class="nv">$IMAGE</span><span class="s2">"</span> <span class="nt">-n</span> <span class="nt">-O</span> NAME | <span class="nb">head</span> <span class="nt">-n</span> 1<span class="si">)</span><span class="sh">
+if [ "</span><span class="nv">$cache_fs</span><span class="sh">" != ext4 ] ||
+   [ -z "</span><span class="nv">$loop_device</span><span class="sh">" ] ||
+   [ "</span><span class="nv">$cache_device</span><span class="sh">" != "</span><span class="nv">$loop_device</span><span class="sh">" ]; then
+  echo 'The mounted cache does not match our demo image. Aborting.'
+  exit 1
+fi
+
+# Remove cached objects, not the filesystem or reserved image.
+find "</span><span class="nv">$CACHE</span><span class="sh">" -mindepth 1 -maxdepth 1 ! -name lost+found -exec rm -rf -- {} +
+
+# Restart the temporary daemon and restore the NFS mount.
+systemctl start fscache-demo.service 2&gt;/dev/null || </span><span class="se">\</span><span class="sh">
+  systemd-run --unit=fscache-demo --property=Type=exec --collect </span><span class="se">\</span><span class="sh">
+    /sbin/cachefilesd -n -s -f /etc/cachefilesd-demo.conf
+systemctl is-active --quiet fscache-demo.service
+mount -t nfs4 </span><span class="se">\</span><span class="sh">
+  -o ro,hard,vers=4.2,proto=tcp,rsize=1048576,wsize=1048576,nconnect=4,timeo=600,retrans=5,sec=sys,fsc </span><span class="se">\</span><span class="sh">
+  "</span><span class="nv">$NFS_SOURCE</span><span class="sh">" /mnt/llm
+findmnt -M /mnt/llm -n -o OPTIONS | tr ',' '</span><span class="se">\n</span><span class="sh">' | grep -qx fsc
+
+echo 'Local cache emptied. Ready for a fresh cold read.'
+</span><span class="no">EOF
+</span></pre></table></code></div></div><p>After the reset, <code class="language-plaintext highlighter-rouge">du -sh /var/cache/fscache-demo</code> should show very little cached data and the NFS mount should still have <code class="language-plaintext highlighter-rouge">fsc</code> enabled. Use this reset whenever you need a cold disk cache for another experiment.</p><h2 id="read-all-74-model-files-cold-and-warm"><span class="me-2">Read all 74 model files, cold and warm</span><a href="#read-all-74-model-files-cold-and-warm" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>Now we can run the full-model test. The helper reads every regular file in the snapshot, including the weight shards, using the same order for both passes. It prints a live completed-file counter, so you can see it move from <code class="language-plaintext highlighter-rouge">0/74</code> to <code class="language-plaintext highlighter-rouge">74/74</code>.</p><p>The first pass gets data from TrueNAS and fills CacheFiles. The second pass clears RAM again and rereads everything with the local disk cache already warm.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="nb">printf</span> <span class="s1">'\nFull model: FS-Cache cold (empty SSD cache)\n'</span>
+read_model full
+<span class="nb">sudo du</span> <span class="nt">-sh</span> /var/cache/fscache-demo
+<span class="nb">df</span> <span class="nt">-h</span> /var/cache/fscache-demo
+
+<span class="nb">printf</span> <span class="s1">'\nFull model: FS-Cache warm (local SSD)\n'</span>
+read_model full
+</pre></table></code></div></div><p>The first full-model pass took <strong>565 seconds</strong>, or a little over nine minutes. All 74 files were read over NFS while CacheFiles filled the SSD, and the local cache grew to about <strong>155 GiB</strong>. The warm pass took <strong>93 seconds</strong>, around a minute and a half.</p><p>That’s <strong>about 6.1 times faster</strong> for reading the full model once the cache was warm. The first result is <em>FS-Cache cold</em>, which includes writing the files to local storage as they’re read. It isn’t a separate NFS-only full-model measurement. These are file reads with <code class="language-plaintext highlighter-rouge">dd</code>, not complete model startup or inference times.</p><h2 id="what-i-measured"><span class="me-2">What I measured</span><a href="#what-i-measured" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>These are the measurements from the tests. The single-shard times are rounded.</p><div class="table-wrapper"><table><thead><tr><th>Test<th style="text-align: right">FS-Cache cold<th style="text-align: right">FS-Cache warm<th style="text-align: right">Improvement<tbody><tr><td>One 3.3 GiB shard<td style="text-align: right">~4.5 s<td style="text-align: right">1.7 s<td style="text-align: right">~2.6x<tr><td>Entire model, 74 files (155.44 GiB)<td style="text-align: right">565 s<td style="text-align: right">93 s<td style="text-align: right">~6.1x</table></div><p>The NAS and test client were connected over <strong>10 GbE</strong> for these measurements. On a slower network, the initial read from TrueNAS can take longer, so the improvement from a warm local cache may be larger. The actual result still depends on the client’s SSD, the network, and whether the files remain cached.</p><p><a href="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/nfs-fscache-full-model.webp" class="popup img-link blur"><img data-src="https://images.technotim.com/assets/img/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/nfs-fscache-full-model.webp" alt="Full model cold versus warm FS-Cache results" data-lqip="true" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACxSURBVE3BMUoDQRiG4fcfR+KwRBcLSZPCJpVH8B7ezdZGL2Bpb+EJBDsJpFjNkMhuZvf/dEDB57Hl5UopJSRhZrg7wzDQdR3/xe02s9vtMTMqC4FSDpgZlfghEdFEmwKSuLlecLVs+PO6/uL+ZSTnTPQQyLMGjROPZytu756RO5XcmTcnSCJqnOg3H1RvD08cn19gs0TZvKNy4LP0VJFfbdtiZtg04Pueo9M5pRRyzlTfuftT5wdwJncAAAAASUVORK5CYII="></a></p><p><em>Reading all 74 model files dropped from 565 seconds to 93 seconds with a warm SSD cache, about 6.1 times faster.</em></p><p>The one-shard baseline was measured <strong>without <code class="language-plaintext highlighter-rouge">fsc</code></strong>. Its first read after enabling FS-Cache took about the same time because Linux had to fetch the file from NFS and populate the local cache. The full-model comparison started with <strong>FS-Cache already enabled</strong>, so 565 seconds includes filling the local SSD. There isn’t a separate NFS-only full-model measurement in this test.</p><p>The improvement depends on the network, the local storage and whether the files are already cached. The test uses sequential buffered file reads into <code class="language-plaintext highlighter-rouge">/dev/null</code>. A model server still has to initialize the runtime and load the weights, and it might read files differently. These timings only isolate the file-reading portion.</p><h2 id="where-id-use-this-and-where-i-wouldnt"><span class="me-2">Where I’d use this, and where I wouldn’t</span><a href="#where-id-use-this-and-where-i-wouldnt" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>This is useful for the problem I started with. I have large model files on a NAS and sometimes need to read the same ones again on the same machine. It’s also worth considering for read-heavy shared datasets, installers, Linux ISOs, or other files that get accessed repeatedly.</p><p>But <strong>FS-Cache is a read cache</strong>. It isn’t a general-purpose write cache, and if a file only gets read once, writing a local copy doesn’t help that first read. If the working set grows beyond the cache, older data gets culled and has to be fetched again when needed.</p><p>For application-level data caching, Redis or Valkey may make more sense. If you’re trying to cache local block storage, tools such as bcache or dm-cache solve a different problem. Those aren’t drop-in replacements for NFS FS-Cache. The right choice depends on what you’re trying to speed up.</p><h2 id="my-permanent-setup"><span class="me-2">My permanent setup</span><a href="#my-permanent-setup" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>This tutorial uses a temporary service and loopback filesystem so the demo is easy to repeat and clean up. It <strong>isn’t a persistent production configuration</strong>. If you want to keep a cache across reboots, you’ll need to mount its local filesystem before starting <code class="language-plaintext highlighter-rouge">cachefilesd</code>, configure the daemon to start reliably, and enable <code class="language-plaintext highlighter-rouge">fsc</code> on the NFS mount.</p><p>I manage that setup with Ansible, so I can make the same changes across multiple Linux machines without maintaining the configuration by hand.</p><h2 id="clean-up-the-demo"><span class="me-2">Clean up the demo</span><a href="#clean-up-the-demo" class="anchor text-muted"><i class="fas fa-hashtag"></i></a></h2><p>When you’re done, this removes the temporary NFS mount, stops the demo daemon, unmounts its ext4 image, and deletes the image and config. The <strong>256 GiB host disk allocation is released</strong>. It leaves the installed packages and all the original files on TrueNAS alone.</p><p>Only use this on the dedicated demo machine. Close any processes using <code class="language-plaintext highlighter-rouge">/mnt/llm</code> before running it. The checks stop the command if the cache filesystem isn’t the loopback image created by this tutorial.</p><div class="language-bash highlighter-rouge"><div class="code-header"> <span data-label-text="Shell"><i class="fas fa-code fa-fw small"></i></span> <button aria-label="copy" data-title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+</pre><td class="rouge-code"><pre><span class="nb">cd</span> /  <span class="c"># Leave the NFS mount in this terminal, too.</span>
+<span class="nb">sudo </span>bash <span class="nt">-e</span> <span class="o">&lt;&lt;</span><span class="sh">'</span><span class="no">EOF</span><span class="sh">'
+cd /
+IMAGE=/var/cache/fscache-demo.img
+CACHE=/var/cache/fscache-demo
+
+# Unmount the demo NFS share only.
+if mountpoint -q /mnt/llm; then
+  NFS_SOURCE=</span><span class="si">$(</span>findmnt <span class="nt">-M</span> /mnt/llm <span class="nt">-n</span> <span class="nt">-o</span> SOURCE<span class="si">)</span><span class="sh">
+  NFS_TYPE=</span><span class="si">$(</span>findmnt <span class="nt">-M</span> /mnt/llm <span class="nt">-n</span> <span class="nt">-o</span> FSTYPE<span class="si">)</span><span class="sh">
+  if [ "</span><span class="nv">$NFS_TYPE</span><span class="sh">" != nfs4 ]; then
+    echo 'Unexpected filesystem at /mnt/llm. Aborting.'
+    exit 1
+  fi
+  case "</span><span class="nv">$NFS_SOURCE</span><span class="sh">" in
+    *:/mnt/storage0/services/llm) ;;
+    *) echo 'Unexpected NFS export. Aborting.'; exit 1 ;;
+  esac
+  umount /mnt/llm
+fi
+
+# Stop the daemon before unmounting its local filesystem.
+systemctl stop fscache-demo.service 2&gt;/dev/null || true
+if pgrep -x cachefilesd &gt;/dev/null; then
+  echo 'CacheFiles is still running. Aborting.'
+  exit 1
+fi
+
+# Verify the mounted cache belongs to the demo image.
+if mountpoint -q "</span><span class="nv">$CACHE</span><span class="sh">"; then
+  cache_device=</span><span class="si">$(</span>findmnt <span class="nt">-M</span> <span class="s2">"</span><span class="nv">$CACHE</span><span class="s2">"</span> <span class="nt">-n</span> <span class="nt">-o</span> SOURCE<span class="si">)</span><span class="sh">
+  cache_fs=</span><span class="si">$(</span>findmnt <span class="nt">-M</span> <span class="s2">"</span><span class="nv">$CACHE</span><span class="s2">"</span> <span class="nt">-n</span> <span class="nt">-o</span> FSTYPE<span class="si">)</span><span class="sh">
+  loop_device=</span><span class="si">$(</span>losetup <span class="nt">-j</span> <span class="s2">"</span><span class="nv">$IMAGE</span><span class="s2">"</span> <span class="nt">-n</span> <span class="nt">-O</span> NAME | <span class="nb">head</span> <span class="nt">-n</span> 1<span class="si">)</span><span class="sh">
+  if [ "</span><span class="nv">$cache_fs</span><span class="sh">" != ext4 ] ||
+     [ -z "</span><span class="nv">$loop_device</span><span class="sh">" ] ||
+     [ "</span><span class="nv">$cache_device</span><span class="sh">" != "</span><span class="nv">$loop_device</span><span class="sh">" ]; then
+    echo 'Unexpected filesystem at the cache mount. Aborting.'
+    exit 1
+  fi
+  umount "</span><span class="nv">$CACHE</span><span class="sh">"
+fi
+
+# Don't delete an image that's still attached to a loop device.
+if [ -e "</span><span class="nv">$IMAGE</span><span class="sh">" ] &amp;&amp; losetup -j "</span><span class="nv">$IMAGE</span><span class="sh">" | grep -q .; then
+  echo 'The demo image is still attached to a loop device. Aborting.'
+  exit 1
+fi
+
+rm -f -- /etc/cachefilesd-demo.conf "</span><span class="nv">$IMAGE</span><span class="sh">"
+rmdir "</span><span class="nv">$CACHE</span><span class="sh">" 2&gt;/dev/null || true
+rmdir /mnt/llm 2&gt;/dev/null || true
+systemctl reset-failed fscache-demo.service 2&gt;/dev/null || true
+
+echo 'Demo cleanup complete. The 256 GiB cache image is gone.'
+</span><span class="no">EOF
+</span></pre></table></code></div></div><p>I like that I can keep the model library centralized while each machine uses its own SSD for files it keeps reading. There’s some setup involved, and it won’t help every workload, but for repeated NFS reads it’s been a useful addition to my homelab.</p><p>If you want to dig into the implementation, the <a href="https://docs.kernel.org/filesystems/caching/cachefiles.html">Linux CacheFiles documentation</a> is a good reference.</p></div><div class="post-tail-wrapper text-muted"><div class="d-flex justify-content-between align-items-center gap-3 mb-3"><div class="post-meta"> <i class="far fa-folder-open fa-fw me-1"></i> <a href="/categories/homelab/">homelab</a>, <a href="/categories/linux/">linux</a></div></div><div class="post-tags"> <i class="fa fa-tags fa-fw me-1"></i> <a href="/tags/linux/" class="post-tag no-text-decoration" >linux</a> <a href="/tags/nfs/" class="post-tag no-text-decoration" >nfs</a> <a href="/tags/fscache/" class="post-tag no-text-decoration" >fscache</a> <a href="/tags/cachefiles/" class="post-tag no-text-decoration" >cachefiles</a> <a href="/tags/cachefilesd/" class="post-tag no-text-decoration" >cachefilesd</a> <a href="/tags/truenas/" class="post-tag no-text-decoration" >truenas</a> <a href="/tags/nvme/" class="post-tag no-text-decoration" >nvme</a> <a href="/tags/homelab/" class="post-tag no-text-decoration" >homelab</a> <a href="/tags/caching/" class="post-tag no-text-decoration" >caching</a></div><div class=" post-tail-bottom d-flex justify-content-between align-items-center mt-5 pb-2 " ><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper d-flex align-items-center"> <span class="share-label text-muted">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Cache%20NFS%20Files%20Locally%20with%20Linux%20FS-Cache%20and%20CacheFiles%20-%20Techno%20Tim&url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fcache-nfs-files-locally-with-linux-fs-cache-and-cachefiles%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter" aria-label="Twitter"> <i class="fa-fw fa-brands fa-square-x-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Cache%20NFS%20Files%20Locally%20with%20Linux%20FS-Cache%20and%20CacheFiles%20-%20Techno%20Tim&u=https%3A%2F%2Ftechnotim.com%2Fposts%2Fcache-nfs-files-locally-with-linux-fs-cache-and-cachefiles%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://t.me/share/url?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fcache-nfs-files-locally-with-linux-fs-cache-and-cachefiles%2F&text=Cache%20NFS%20Files%20Locally%20with%20Linux%20FS-Cache%20and%20CacheFiles%20-%20Techno%20Tim" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Ftechnotim.com%2Fposts%2Fcache-nfs-files-locally-with-linux-fs-cache-and-cachefiles%2F" target="_blank" rel="noopener" data-bs-toggle="tooltip" data-bs-placement="top" title="Linkedin" aria-label="Linkedin"> <i class="fa-fw fab fa-linkedin"></i> </a> <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/share-to-mastodon/+esm"></script> <button class="btn text-start" data-bs-toggle="tooltip" data-bs-placement="top" title="Mastodon" aria-label="Mastodon"> <share-to-mastodon class="share-mastodon" message="Cache%20NFS%20Files%20Locally%20with%20Linux%20FS-Cache%20and%20CacheFiles%20-%20Techno%20Tim" url="https%3A%2F%2Ftechnotim.com%2Fposts%2Fcache-nfs-files-locally-with-linux-fs-cache-and-cachefiles%2F"customInstanceList="[{&quot;label&quot;:&quot;mastodon.social&quot;,&quot;link&quot;:&quot;https://mastodon.social/&quot;},{&quot;label&quot;:&quot;mastodon.online&quot;,&quot;link&quot;:&quot;https://mastodon.online/&quot;},{&quot;label&quot;:&quot;fosstodon.org&quot;,&quot;link&quot;:&quot;https://fosstodon.org/&quot;},{&quot;label&quot;:&quot;photog.social&quot;,&quot;link&quot;:&quot;https://photog.social/&quot;}]" > <i class="fa-fw fa-brands fa-mastodon"></i> </share-to-mastodon> </button> <button id="copy-link" aria-label="Copy link" class="btn small" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy link" data-title-succeed="Link copied successfully!" > <i class="fa-fw fas fa-link pe-none fs-6"></i> </button> </span></div></div></div></article></main><aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 text-muted"><div class="access"><section id="access-lastmod"><h2 class="panel-heading">Recently Updated</h2><ul class="content list-unstyled ps-0 pb-1 ms-1 mt-2"><li class="text-truncate lh-lg"> <a href="/posts/cache-nfs-files-locally-with-linux-fs-cache-and-cachefiles/">Cache NFS Files Locally with Linux FS-Cache and CacheFiles</a><li class="text-truncate lh-lg"> <a href="/posts/automatically-install-ubuntu-server-with-a-bootable-usb/">Automatically Install Ubuntu Server With a Bootable USB</a><li class="text-truncate lh-lg"> <a href="/posts/switchyard-local-ai-routing/">Automatic local AI model routing with NVIDIA Switchyard</a><li class="text-truncate lh-lg"> <a href="/posts/vllm-gb10-model-verification/">How I Build and Test vLLM for NVIDIA GB10</a><li class="text-truncate lh-lg"> <a href="/posts/ubuntu-gb10/">Ubuntu Server on the NVIDIA DGX Spark (Without the Desktop)</a></ul></section><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div class="toc-border-cover z-3"></div><section id="toc-wrapper" class="invisible position-sticky ps-0 pe-4 pb-4"><h2 class="panel-heading ps-3 pb-2 mb-0">Contents</h2><nav id="toc"></nav></section></aside></div><div class="row"><div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4"><aside id="related-posts" aria-labelledby="related-label"><h3 class="mb-4" id="related-label">Further Reading</h3><nav class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4"><article class="col"> <a href="/posts/localsend/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1709989200" data-df="ll" > Mar 9, 2024 </time><h4 class="pt-0 my-2">Meet LocalSend - A Cross Platform, Open Source Alternative to AirDrop</h4><div class="text-muted"><p>LocalSend is an open source application that securely transfers files between devices without the internet. It’s cross platform meaning that it’s available for Windows, Mac, Linux, iOS (iPhone, i...</p></div></div></a></article><article class="col"> <a href="/posts/install-mozilla-sops/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1675090800" data-df="ll" > Jan 30, 2023 </time><h4 class="pt-0 my-2">Installing Mozilla SOPS Encryption Tool</h4><div class="text-muted"><p>What is Mozilla SOPS? SOPS is an editor of encrypted files that supports YAML, JSON, ENV, INI and BINARY formats and encrypts with AWS KMS, GCP KMS, Azure Key Vault, age, and PGP.It’s open source ...</p></div></div></a></article><article class="col"> <a href="/posts/install-age/" class="post-preview card h-100"><div class="card-body"> <time data-ts="1675090800" data-df="ll" > Jan 30, 2023 </time><h4 class="pt-0 my-2">Installing Age Encryption Tool</h4><div class="text-muted"><p>What is Age? age is a simple, modern and secure file encryption tool, format, and Go library. It features small explicit keys, no config options, and UNIX-style composability.It is commonly used i...</p></div></div></a></article></nav></aside><nav class="post-navigation d-flex justify-content-between" aria-label="Post Navigation"> <a href="/posts/automatically-install-ubuntu-server-with-a-bootable-usb/" class="btn btn-outline-primary" aria-label="Older" ><p>Automatically Install Ubuntu Server With a Bootable USB</p></a><div class="btn btn-outline-primary disabled" aria-label="Newer"><p>-</p></div></nav><footer aria-label="Site Info" class=" d-flex flex-column justify-content-center text-muted flex-lg-row justify-content-lg-between align-items-lg-center pb-lg-3 " ><p>© <time>2026</time> <a href="https://l.technotim.com/twitter">Techno Tim</a>. <span data-bs-toggle="tooltip" data-bs-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author." >Some rights reserved.</span></p><p><a href="/sponsor/">🤝 Help keep this ad-free!</href> &nbsp; &nbsp;<a href="https://l.technotim.com/shop">🛍️ Check out the new merch shop!</href></p></footer></div></div><div id="search-result-wrapper" class="d-flex justify-content-center d-none"><div class="col-11 content"><div id="search-hints"><section><h2 class="panel-heading">Trending Tags</h2><div class="d-flex flex-wrap mt-3 mb-1 me-3"> <a class="post-tag btn btn-outline-primary" href="/tags/homelab/">homelab</a> <a class="post-tag btn btn-outline-primary" href="/tags/hardware/">hardware</a> <a class="post-tag btn btn-outline-primary" href="/tags/kubernetes/">kubernetes</a> <a class="post-tag btn btn-outline-primary" href="/tags/docker/">docker</a> <a class="post-tag btn btn-outline-primary" href="/tags/self-hosted/">self-hosted</a> <a class="post-tag btn btn-outline-primary" href="/tags/rancher/">rancher</a> <a class="post-tag btn btn-outline-primary" href="/tags/proxmox/">proxmox</a> <a class="post-tag btn btn-outline-primary" href="/tags/linux/">linux</a> <a class="post-tag btn btn-outline-primary" href="/tags/portainer/">portainer</a> <a class="post-tag btn btn-outline-primary" href="/tags/unifi/">unifi</a></div></section></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><aside aria-label="Scroll to Top"> <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow"> <i class="fas fa-angle-up"></i> </button></aside></div><div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div><script> document.addEventListener('DOMContentLoaded', () => { SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<article class="px-1 px-sm-2 px-lg-4 px-xl-0"><header><h2><a href="{url}">{title}</a></h2><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div></header><p>{content}</p></article>', noResultsText: '<p class="mt-5">Oops! No results found.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="me-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); }); </script>
