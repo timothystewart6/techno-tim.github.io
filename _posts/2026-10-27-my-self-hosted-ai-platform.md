@@ -6,7 +6,7 @@ categories: ai homelab
 tags: local-ai self-hosted-ai homelab vllm semantic-router qwen openvino intel-npu truenas docker nvidia inference rag
 image:
   path: /assets/img/headers/my-self-hosted-ai-platform.webp
-  alt: Techno Tim presenting an open desktop PC beneath the headline “MY AI Platform”
+  alt: Me with the server behind my local AI platform. It's built around older GPUs and other hardware I already had.
   lqip: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAAAklEQVR4AewaftIAAADGSURBVAXBv0rDQADA4V/uQhJCCwrS0KXiomCnbq5u9Xk6B3yRLvoG3UtfQBFRh4qYiprr9U+guaNGS3p+n5emqZNC0koSnu/vMMZy2e+jckX1W6FUTpZlyGajeY0DU5a044AkEkwephwGDlEZTFHw9PqGv9CaKAiZL9eMZpbTox0v75qvqceHXhFGEcPhDcJYS64UWinOWpIDf8PFeYft3w7P1bCvmX/m+IOrLi6MkXGb3nGDelvysxfMlifcjh9ZG0ux+OYf1IFaUE0gV80AAAAASUVORK5CYII=
 ---
 
@@ -29,9 +29,8 @@ I started experimenting with routing in my earlier post on [automatic local AI m
 
 The new goal is broader than choosing between two language models. I also have services for speech, vision, and retrieving information from documents and repositories. I want applications to have a consistent way to reach them without having to know which GPU is involved.
 
-![Self-hosted AI platform overview showing clients, Traefik, Semantic Router, model backends, specialist services, and TrueNAS storage](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-overview.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACRSURBVE3BW27CMBBA0euZ8cQhtCCx/yWCUJOUyPhRWeoH54Rtffac37TWSGnCPSIifAqATR7xaKgqn7Z88HjtXOeFb0/Y+ps5cqGQUIHyUzEDv2betVBbZTCPgpsjoSMicIoQoJUXtaykZsCCzZMz7PcVkcARE613zj6jdkH1xGD8W25fDCF3Oh1VRf1MC8bwB32jNZRxkwMvAAAAAElFTkSuQmCC" }
-
-_Clients use one entrypoint. Semantic Router chooses a backend while the other services handle their own jobs._
+![Diagram showing client apps passing through Traefik and Semantic Router to the RTX 3060, RTX 3090, and RTX 2000 Ada, with mirrored NPU guard traffic, TrueNAS storage, and separate GX10 servers.](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-overview.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACRSURBVE3BW27CMBBA0euZ8cQhtCCx/yWCUJOUyPhRWeoH54Rtffac37TWSGnCPSIifAqATR7xaKgqn7Z88HjtXOeFb0/Y+ps5cqGQUIHyUzEDv2betVBbZTCPgpsjoSMicIoQoJUXtaykZsCCzZMz7PcVkcARE613zj6jdkH1xGD8W25fDCF3Oh1VRf1MC8bwB32jNZRxkwMvAAAAAElFTkSuQmCC" }
+_I can point my applications at one endpoint instead of configuring each one for a different model or machine._
 
 ## The hardware I'm using
 
@@ -51,9 +50,8 @@ I'm also using TrueNAS to store my model library and the data behind some of the
 
 I still have two GX10 machines running DeepSeek V4 Flash. They're useful for separate experiments and serving workloads, but they aren't currently automatic fallback targets for this Semantic Router configuration. I want to keep that distinction clear because there's a difference between having a model available somewhere on the network and having it qualified as a route for an agent request.
 
-![Self-hosted AI platform hardware map showing GPUs, Intel NPU, integrated GPU, TrueNAS, and separate GX10 serving machines](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-hardware.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACaSURBVE3By1LDMBBFwXNHY9lKoLzJiv//OlaheNiSJQ3Fjm59fT6jXRcRIOB+L6SU+E+Ad6DFZFsWlIxzdObVMDMElCUjCW9DPKtxG5Nuid47Y0zcYXWjngdE4Nv84DHecd/JcVDn4GwXL76imYntDZPwGa/81MTNV86286f1yveRMRfuE0l4WUXahWewAjOC2sSWAYlUMibxC23MRFq8dofPAAAAAElFTkSuQmCC" }
-
-_Different hardware handles different types of work. Some devices run more than one model or service._
+![AI-01 hardware map showing vLLM on RTX 3090 and RTX 3060, Nemotron and Vela on RTX 2000 Ada, and specialist services on the Intel iGPU and NPU. TrueNAS and GX10 are separate.](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-hardware.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACaSURBVE3By1LDMBBFwXNHY9lKoLzJiv//OlaheNiSJQ3Fjm59fT6jXRcRIOB+L6SU+E+Ad6DFZFsWlIxzdObVMDMElCUjCW9DPKtxG5Nuid47Y0zcYXWjngdE4Nv84DHecd/JcVDn4GwXL76imYntDZPwGa/81MTNV86286f1yveRMRfuE0l4WUXahWewAjOC2sSWAYlUMibxC23MRFq8dofPAAAAAElFTkSuQmCC" }
+_Each GPU has a different job, and the RTX 2000 Ada even runs several models at once._
 
 ## How a request gets to the right model
 
@@ -67,8 +65,7 @@ For an ordinary question, the smaller Qwen model might be enough. A request with
 
 I've had to spend more time on this than I expected. A short request can arrive with a large tool catalog or a long conversation, and a model that looks like the right choice from the prompt alone may not actually be able to accept it. That's why I'm paying attention to context limits, output budgets, tool compatibility, and actual request shapes instead of just changing a few routing keywords.
 
-![Self-hosted AI request flow through Traefik and Semantic Router to model backends](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-request-flow.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACSSURBVH3BwQ6CMBBAwdeyRakEMMHgxYv//2PGRFEQELErHEw8OWPaptZxfLGw1rDxHmMNvwwgcewQcTixLOrrCBiyQrh0LapKtk6QcwP3/k3pB1BlfHgwFpf0TBpQ4K0B2eeWMgWJHBoCz5hZIHJCNzSoKmm8Qk63ibpTDklPGF7I1qOA0YhjseNLqlyocmaOfz6zDDm+fbvMzAAAAABJRU5ErkJggg==" }
-
+![Flowchart showing a Copilot request passing through Traefik and Semantic Router to the RTX 3060 or RTX 3090, with a Copilot tool loop and observe-only NPU guard.](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-request-flow.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACSSURBVH3BwQ6CMBBAwdeyRakEMMHgxYv//2PGRFEQELErHEw8OWPaptZxfLGw1rDxHmMNvwwgcewQcTixLOrrCBiyQrh0LapKtk6QcwP3/k3pB1BlfHgwFpf0TBpQ4K0B2eeWMgWJHBoCz5hZIHJCNzSoKmm8Qk63ibpTDklPGF7I1qOA0YhjseNLqlyocmaOfz6zDDm+fbvMzAAAAABJRU5ErkJggg==" }
 _The decision is based on what the request requires, not only which prompt sounds easy._
 
 ## Where retrieval fits in
@@ -81,9 +78,8 @@ The RTX 2000 Ada is a good place for these smaller services. I can keep embeddin
 
 This is still one of the areas I'm tuning. An explicit request to search shared knowledge and a question that should automatically use that knowledge aren't always the same routing case. I'm testing both, along with questions where the answer should come from the conversation rather than retrieval. The examples further down intentionally leave RAG out until the basic model routing is working.
 
-![Self-hosted AI retrieval flow through embeddings, Qdrant, reranking, and the generation model](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-rag-flow.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACNSURBVE3B0U5CMRRE0T3tablgYmLi//8iqGACbc/I1RfX0vXr4scYOI0kolZOL0f+E1DmgplC+c0Wg7s7l1sy5+Lj80ZmsoveKlEL4QAVnCDAQGsNzK+YYzHm4uFXti3InBx6Ie9neu1cRxCrEjUKFuQQcyZSYVfEk0kbY2I7NNJGRzBwQkg8vbN7488Pf+pFAOcfV5EAAAAASUVORK5CYII=" }
-
-_The retrieval services find evidence. The generation model uses that evidence to answer._
+![Two-stage diagram showing documents embedded on RTX 2000 Ada and indexed in Qdrant with PostgreSQL metadata, then retrieved and reranked before RTX 3090 answers a question.](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-rag-flow.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACNSURBVE3B0U5CMRRE0T3tablgYmLi//8iqGACbc/I1RfX0vXr4scYOI0kolZOL0f+E1DmgplC+c0Wg7s7l1sy5+Lj80ZmsoveKlEL4QAVnCDAQGsNzK+YYzHm4uFXti3InBx6Ie9neu1cRxCrEjUKFuQQcyZSYVfEk0kbY2I7NNJGRzBwQkg8vbN7488Pf+pFAOcfV5EAAAAASUVORK5CYII=" }
+_The Ada finds relevant passages from my files, and the 3090 uses them to answer. Retrieval is only used when the request needs it._
 
 ## What about speech and images?
 
@@ -95,9 +91,8 @@ The integrated GPU is being used for the vision encoder, with the larger languag
 
 There's also an advisory prompt-injection detector on the NPU. At the moment it sees mirrored traffic and records what it finds. It doesn't sit inline and block requests. I can gather data about what it detects without turning an experimental classifier into a reason for ordinary requests to fail.
 
-![Self-hosted AI voice flow from Whisper speech recognition through Semantic Router to Kokoro text to speech](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-voice.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACgSURBVE3ByQ6CMBRA0dvyaJkKhhjW7v3/P3LhSuOEaFtqwJh4jrpeTinECImVtQZrDf8UICI5eW5QWuPDjGSK1xQR0fjkSSmRZ4L4EJneHjEV58dMX2ime6KsI/ds5O09fe2QqtA0VcNiU2kWnWPVsiHMEdEZchsDz2mkL1+M1yOq3nG4CNvW8EgnfAgMTYe4uqApLeBwxZbFvtV8Dfx8ABsMPD+WkuNCAAAAAElFTkSuQmCC" }
-
-_Speech models handle audio while the language model handles the request._
+![Flowchart showing microphone audio transcribed by Whisper on the Intel NPU, routed to Qwen on RTX 3060, processed by Home Assistant, then spoken using Kokoro on the NPU.](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-voice.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACgSURBVE3ByQ6CMBRA0dvyaJkKhhjW7v3/P3LhSuOEaFtqwJh4jrpeTinECImVtQZrDf8UICI5eW5QWuPDjGSK1xQR0fjkSSmRZ4L4EJneHjEV58dMX2ime6KsI/ds5O09fe2QqtA0VcNiU2kWnWPVsiHMEdEZchsDz2mkL1+M1yOq3nG4CNvW8EgnfAgMTYe4uqApLeBwxZbFvtV8Dfx8ABsMPD+WkuNCAAAAAElFTkSuQmCC" }
+_Whisper and Kokoro handle audio on the Intel NPU, Qwen handles the language request, and Home Assistant still executes the actions._
 
 ## Try a smaller version with Docker Compose
 
@@ -359,9 +354,8 @@ docker run --rm \
   http://host.docker.internal:8000/v1/models
 ```
 
-![Docker Compose example with two vLLM backends and a separate Semantic Router stack](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-compose-example.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACUSURBVDXBWw7CIBBA0csMIG2Nzx9/3P+a3IOJxrcIjGnSnuMe96vl/MPMEBX6LqEi4BwzB/gYAzEEzBzWDBXhfMvU1lgPkS4KI/98Z3IuuJJ4PY3doVBMyBU+v0q+nNDQ4VdDggFaMzZ7w8xo9c63fTBdstwewQmeSamVUfDKikRAGSSh0TPyTGLwzPoUSYuAijD7A/zGO72+0AQFAAAAAElFTkSuQmCC" }
-
-_The demo keeps two vLLM backends separate from Semantic Router so you can inspect each part independently._
+![Diagram showing Semantic Router outside Docker Compose routing to two vLLM containers serving Qwen3 0.6B and 1.7B, both using one NVIDIA GPU and a Hugging Face cache.](/assets/img/posts/my-self-hosted-ai-platform/ai-platform-compose-example.webp){: lqip="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAklEQVR4AewaftIAAACUSURBVDXBWw7CIBBA0csMIG2Nzx9/3P+a3IOJxrcIjGnSnuMe96vl/MPMEBX6LqEi4BwzB/gYAzEEzBzWDBXhfMvU1lgPkS4KI/98Z3IuuJJ4PY3doVBMyBU+v0q+nNDQ4VdDggFaMzZ7w8xo9c63fTBdstwewQmeSamVUfDKikRAGSSh0TPyTGLwzPoUSYuAijD7A/zGO72+0AQFAAAAAElFTkSuQmCC" }
+_Docker Compose runs the two vLLM backends on one GPU. The router runs separately through the official CLI._
 
 ## What this example doesn't reproduce
 
