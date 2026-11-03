@@ -30,6 +30,9 @@ yarn*
 !.travis.yml
 !.markdownlint.yaml
 
+# local scratch
+zIgnore/
+
 # bundler cache
 .bundle
 _site
